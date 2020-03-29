@@ -11,18 +11,53 @@ class Canvas extends Component {
     this.onMouseDown = this.onMouseDown.bind(this);
     this.onMouseMove = this.onMouseMove.bind(this);
     this.endPaintEvent = this.endPaintEvent.bind(this);
+  }
 
-    this.pusher = props.pusher;
+  componentDidMount() {
+    this.canvas.width = 1000;
+    this.canvas.height = 800;
+    this.ctx = this.canvas.getContext('2d');
+    this.ctx.lineJoin = 'round';
+    this.ctx.lineCap = 'round';
+    this.ctx.lineWidth = 5;
+
+    if (this.props.websocket !== null) {
+      this.initializeWebsocketPaintListener();
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.websocket && prevProps.websocket === null) {
+      this.initializeWebsocketPaintListener();
+    }
+  }
+
+  initializeWebsocketPaintListener() {
+    window.console.log('initialize paint');
+    this.props.websocket.on('emit-paint', data => {
+      window.console.log('draw event', data, this.props.userId, data.userId);
+      const { userId, line, color } = data;
+      if (userId !== this.props.userId) {
+        window.console.log('draw event', data, this.props.userId, data.userId);
+        line.forEach(position => {
+          this.paint(position.start, position.stop, color);
+        });
+      }
+    });
   }
 
   isPainting = false;
   line = [];
   prevPos = { offsetX: 0, offsetY: 0 };
-
+  lineCountStart = 0;
+  maxPaintTime = 150;
+  startTime = null;
   onMouseDown({ nativeEvent }) {
     const { offsetX, offsetY } = nativeEvent;
     this.isPainting = true;
     this.prevPos = { offsetX, offsetY };
+    this.lineCountStart = 0;
+    this.startTime = new Date();
   }
 
   onMouseMove({ nativeEvent }) {
@@ -40,8 +75,16 @@ class Canvas extends Component {
 
   endPaintEvent() {
     if (this.isPainting) {
+      if (this.line.length === 0) {
+        //TODO:!!
+        console.log('dot!');
+      }
       this.isPainting = false;
-      this.sendPaintData();
+      this.sendPaintData(
+        this.lineCountStart - 1,
+        this.line.length - this.lineCountStart
+      );
+      this.line = [];
     }
   }
 
@@ -55,46 +98,24 @@ class Canvas extends Component {
     this.ctx.lineTo(offsetX, offsetY);
     this.ctx.stroke();
     this.prevPos = { offsetX, offsetY };
-    if (this.line.length > 50) {
+    const timeDiff = new Date() - this.startTime;
+    if (this.line.length > 50 || timeDiff > this.maxPaintTime) {
       this.sendPaintData();
       this.line = [];
     }
   }
 
-  async sendPaintData() {
+  sendPaintData() {
     const body = {
       line: this.line,
-      userId: this.userId,
+      userId: this.props.userId,
       color: this.props.selectedColor
     };
-    const req = await fetch('http://localhost:4000/paint', {
-      method: 'post',
-      body: JSON.stringify(body),
-      headers: {
-        'content-type': 'application/json'
-      }
-    });
-    await req.json();
-  }
-
-  componentDidMount() {
-    this.canvas.width = 1000;
-    this.canvas.height = 800;
-    this.ctx = this.canvas.getContext('2d');
-    this.ctx.lineJoin = 'round';
-    this.ctx.lineCap = 'round';
-    this.ctx.lineWidth = 5;
-
-    const channel = this.pusher.subscribe('painting');
-    channel.bind('draw', data => {
-      window.console.log('draw event', data);
-      const { userId, line, color } = data;
-      if (userId !== this.userId) {
-        line.forEach(position => {
-          this.paint(position.start, position.stop, color);
-        });
-      }
-    });
+    if (this.props.websocket) {
+      this.props.websocket.emit('on-paint', body);
+    } else {
+      throw Error('Cannot send paint data - Web socket is undefined');
+    }
   }
 
   render() {

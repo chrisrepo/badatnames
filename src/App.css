@@ -2,7 +2,8 @@ body {
   font-family: 'Roboto Condensed', serif;
   background-color: #dee3e2;
 }
-.main {
+.main-paint {
+  margin-top: 40px;
   display: flex;
   justify-content: center;
 }

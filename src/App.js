@@ -1,14 +1,15 @@
 // App.js
 
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
+import { Route, BrowserRouter, Redirect } from 'react-router-dom';
+import { createBrowserHistory } from 'history';
+
 import './App.css';
-import Canvas from './canvas';
-import { ColorSelector } from './views/ColorSelector';
 import { Colors } from './models/Colors';
-import { MainPage } from './views/MainPage';
-import { UserList } from './views/UserList';
-import Pusher from 'pusher-js';
+import Login from './views/Login';
 import { v4 } from 'uuid';
+import { Paint } from './views/Paint';
+import { withWebsocket } from './models/withWebsocket';
 
 class App extends Component {
   constructor(props) {
@@ -16,12 +17,19 @@ class App extends Component {
     this.colors = new Colors();
     this.state = {
       selectedColor: this.colors.defaultColor,
-      user: undefined
+      user: undefined,
+      history: createBrowserHistory()
     };
     this.userId = v4();
-    this.pusher = new Pusher('5071c0bac3b84fcc0cf4', {
-      cluster: 'us3'
-    });
+  }
+
+  componentDidMount() {
+    const sessionUser = sessionStorage.getItem('draw-user');
+    if (sessionUser !== null) {
+      this.setState({
+        user: sessionUser
+      });
+    }
   }
 
   changeSelectedColor = hexValue => {
@@ -34,32 +42,32 @@ class App extends Component {
   };
 
   setUser = user => {
+    sessionStorage.setItem('draw-user', user);
     this.setState({
       user
     });
   };
 
   render() {
-    if (!this.state.user) {
-      return <MainPage setUser={this.setUser} />;
-    }
+    const sessionUser = sessionStorage.getItem('draw-user');
     return (
-      <Fragment>
-        <h3 style={{ textAlign: 'center' }}>Dos Paint</h3>
-        <div className="main">
-          <UserList userId={this.userId} pusher={this.pusher} />
-          <Canvas
+      <BrowserRouter history={this.state.history}>
+        <Route path="/" exact>
+          {sessionUser !== null && <Redirect exact from="/" to="/paint" />}
+          {sessionUser === null && (
+            <Login websocket={this.props.websocket} setUser={this.setUser} />
+          )}
+        </Route>
+        <Route path="/paint" exact>
+          <Paint
             userId={this.userId}
-            pusher={this.pusher}
-            selectedColor={this.state.selectedColor}
-          />
-          <ColorSelector
+            websocket={this.props.websocket}
             selectedColor={this.state.selectedColor}
             changeSelectedColor={this.changeSelectedColor}
           />
-        </div>
-      </Fragment>
+        </Route>
+      </BrowserRouter>
     );
   }
 }
-export default App;
+export default withWebsocket(App);

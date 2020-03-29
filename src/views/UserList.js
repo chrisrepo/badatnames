@@ -4,39 +4,39 @@ export class UserList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      userList: []
+      clientList: []
     };
-
-    this.pusher = props.pusher;
   }
 
   componentDidMount() {
-    this.getInitialUserData();
-
-    const channel = this.pusher.subscribe('painting');
-    channel.bind('user', data => {
-      window.console.log('user login event', data);
-    });
+    if (this.props.websocket !== null) {
+      this.initializeJoinListener();
+    }
+  }
+  componentDidUpdate(prevProps) {
+    if (this.props.websocket && prevProps.websocket === null) {
+      this.initializeJoinListener();
+    }
   }
 
-  getInitialUserData = () => {
-    fetch('http://localhost:4000/userList')
-      .then(res => {
-        window.console.log('got res', res);
-        return res.json();
-      })
-      .then(userList => {
-        window.console.log('got list');
-        this.setState({ userList });
+  initializeJoinListener() {
+    window.console.log('initialize JOIN');
+    this.props.websocket.on('emit-join', clientList => {
+      window.console.log('set user data', clientList);
+      this.setState({
+        clientList
       });
-  };
+    });
+    this.props.websocket.emit('on-join-request');
+  }
 
   render() {
-    window.console.log('userlist', this.state.userList);
+    console.log('UserList props', this.state);
     return (
       <div>
-        {this.state.userList.map((user, index) => {
-          return <div key={index}>{user}</div>;
+        {Object.keys(this.state.clientList).map((key, index) => {
+          const client = this.state.clientList[key];
+          return <div key={index}>{client.username}</div>;
         })}
       </div>
     );

@@ -1,7 +1,11 @@
 import React from 'react';
-import './MainPage.css';
+import socketIOClient from 'socket.io-client';
+import { withRouter } from 'react-router-dom';
 
-export class MainPage extends React.Component {
+// Local Imports
+import './Login.css';
+
+class Login extends React.Component {
   constructor(props) {
     super(props);
     this.state = { username: '' };
@@ -13,23 +17,19 @@ export class MainPage extends React.Component {
   }
 
   joinCanvas = () => {
-    window.console.log('join canvas', this.state.username);
     this.sendJoinData();
     this.props.setUser(this.state.username);
+    this.props.history.push('/paint');
   };
 
-  async sendJoinData() {
-    const body = {
-      username: this.state.username
-    };
-    const req = await fetch('http://localhost:4000/login', {
-      method: 'post',
-      body: JSON.stringify(body),
-      headers: {
-        'content-type': 'application/json'
-      }
-    });
-    await req.json();
+  sendJoinData() {
+    if (this.props.websocket) {
+      const body = {
+        username: this.state.username,
+        id: this.props.websocket.id
+      };
+      this.props.websocket.emit('on-join', body);
+    }
   }
 
   render() {
@@ -54,3 +54,5 @@ export class MainPage extends React.Component {
     );
   }
 }
+
+export default withRouter(Login);
