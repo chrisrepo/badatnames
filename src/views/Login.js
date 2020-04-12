@@ -1,6 +1,7 @@
 import React from 'react';
 import socketIOClient from 'socket.io-client';
 import { withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
 
 // Local Imports
 import './Login.css';
@@ -26,9 +27,9 @@ class Login extends React.Component {
     if (this.props.websocket) {
       const body = {
         username: this.state.username,
-        id: this.props.websocket.id
+        id: this.props.connection.websocket.id,
       };
-      this.props.websocket.emit('on-join', body);
+      this.props.connection.websocket.emit('on-join', body);
     }
   }
 
@@ -55,4 +56,7 @@ class Login extends React.Component {
   }
 }
 
-export default withRouter(Login);
+const mapStateToProps = (state) => ({
+  connection: state.connection,
+});
+export default connect(mapStateToProps, {})(withRouter(Login));

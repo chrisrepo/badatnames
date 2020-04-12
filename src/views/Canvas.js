@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 class Canvas extends Component {
   static defaultProps = {
-    selectedColor: '#ffffff'
+    selectedColor: '#ffffff',
   };
 
   constructor(props) {
@@ -21,25 +22,26 @@ class Canvas extends Component {
     this.ctx.lineCap = 'round';
     this.ctx.lineWidth = 5;
 
-    if (this.props.websocket !== null) {
+    if (this.props.connection.websocket !== null) {
       this.initializeWebsocketPaintListener();
     }
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.websocket && prevProps.websocket === null) {
+    if (
+      this.props.connection.websocket &&
+      prevProps.connection.websocket === null
+    ) {
       this.initializeWebsocketPaintListener();
     }
   }
 
   initializeWebsocketPaintListener() {
     window.console.log('initialize paint');
-    this.props.websocket.on('emit-paint', data => {
-      window.console.log('draw event', data, this.props.userId, data.userId);
+    this.props.connection.websocket.on('emit-paint', (data) => {
       const { userId, line, color } = data;
       if (userId !== this.props.userId) {
-        window.console.log('draw event', data, this.props.userId, data.userId);
-        line.forEach(position => {
+        line.forEach((position) => {
           this.paint(position.start, position.stop, color);
         });
       }
@@ -52,6 +54,7 @@ class Canvas extends Component {
   lineCountStart = 0;
   maxPaintTime = 150;
   startTime = null;
+
   onMouseDown({ nativeEvent }) {
     const { offsetX, offsetY } = nativeEvent;
     this.isPainting = true;
@@ -66,7 +69,7 @@ class Canvas extends Component {
       const offSetData = { offsetX, offsetY };
       this.position = {
         start: { ...this.prevPos },
-        stop: { ...offSetData }
+        stop: { ...offSetData },
       };
       this.line = this.line.concat(this.position);
       this.paint(this.prevPos, offSetData, this.props.selectedColor);
@@ -109,10 +112,10 @@ class Canvas extends Component {
     const body = {
       line: this.line,
       userId: this.props.userId,
-      color: this.props.selectedColor
+      color: this.props.selectedColor,
     };
-    if (this.props.websocket) {
-      this.props.websocket.emit('on-paint', body);
+    if (this.props.connection.websocket) {
+      this.props.connection.websocket.emit('on-paint', body);
     } else {
       throw Error('Cannot send paint data - Web socket is undefined');
     }
@@ -121,7 +124,7 @@ class Canvas extends Component {
   render() {
     return (
       <canvas
-        ref={ref => (this.canvas = ref)}
+        ref={(ref) => (this.canvas = ref)}
         style={{ background: 'white', border: '1px solid black' }}
         onMouseDown={this.onMouseDown}
         onMouseLeave={this.endPaintEvent}
@@ -132,4 +135,7 @@ class Canvas extends Component {
   }
 }
 
-export default Canvas;
+const mapStateToProps = (state) => ({
+  connection: state.connection,
+});
+export default connect(mapStateToProps, {})(Canvas);

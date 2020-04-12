@@ -1,33 +1,37 @@
 import React from 'react';
+import { connect } from 'react-redux';
 
-export class UserList extends React.Component {
+class UserList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      clientList: []
+      clientList: [],
     };
   }
 
   componentDidMount() {
-    if (this.props.websocket !== null) {
+    if (this.props.connection.websocket !== null) {
       this.initializeJoinListener();
     }
   }
   componentDidUpdate(prevProps) {
-    if (this.props.websocket && prevProps.websocket === null) {
+    if (
+      this.props.connection.websocket &&
+      prevProps.connection.websocket === null
+    ) {
       this.initializeJoinListener();
     }
   }
 
   initializeJoinListener() {
     window.console.log('initialize JOIN');
-    this.props.websocket.on('emit-join', clientList => {
+    this.props.connection.websocket.on('emit-join', (clientList) => {
       window.console.log('set user data', clientList);
       this.setState({
-        clientList
+        clientList,
       });
     });
-    this.props.websocket.emit('on-join-request');
+    this.props.connection.websocket.emit('on-join-request');
   }
 
   render() {
@@ -42,3 +46,8 @@ export class UserList extends React.Component {
     );
   }
 }
+
+const mapStateToProps = (state) => ({
+  connection: state.connection,
+});
+export default connect(mapStateToProps, {})(UserList);
