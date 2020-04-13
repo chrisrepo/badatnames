@@ -48,6 +48,7 @@ class Canvas extends Component {
   }
 
   isPainting = false;
+  sentPaintData = false;
   line = [];
   prevPos = { offsetX: 0, offsetY: 0 };
   lineCountStart = 0;
@@ -61,27 +62,20 @@ class Canvas extends Component {
     this.lineCountStart = 0;
     this.startTime = new Date();
     this.ctx.lineWidth = this.props.paint.brushSize;
-    window.console.log('start paint');
   }
 
   onMouseMove({ nativeEvent }) {
     if (this.isPainting) {
-      const { offsetX, offsetY } = nativeEvent;
-      const offSetData = { offsetX, offsetY };
-      this.position = {
-        start: { ...this.prevPos },
-        stop: { ...offSetData },
-      };
-      this.line = this.line.concat(this.position);
+      const offSetData = this.addPositionToLine(nativeEvent);
       this.paint(this.prevPos, offSetData, this.props.paint.selectedColor);
     }
   }
 
-  endPaintEvent() {
+  endPaintEvent({ nativeEvent }) {
     if (this.isPainting) {
-      if (this.line.length === 0) {
-        //TODO:!!
-        console.log('TODO: fix dots!');
+      if (this.line.length === 0 && !this.sentPaintData) {
+        const offSetData = this.addPositionToLine(nativeEvent);
+        this.paint(this.prevPos, offSetData, this.props.paint.selectedColor);
       }
       this.isPainting = false;
       this.sendPaintData(
@@ -90,14 +84,26 @@ class Canvas extends Component {
       );
       this.line = [];
     }
+    this.sentPaintData = false;
   }
 
-  paint(prevPos, currPos, strokeStyle) {
+  addPositionToLine(nativeEvent) {
+    const { offsetX, offsetY } = nativeEvent;
+    const offSetData = { offsetX, offsetY };
+    this.position = {
+      start: { ...this.prevPos },
+      stop: { ...offSetData },
+    };
+    this.line = this.line.concat(this.position);
+    return offSetData;
+  }
+
+  paint(prevPos, currPos, color) {
     const { offsetX, offsetY } = currPos;
     const { offsetX: x, offsetY: y } = prevPos;
 
     this.ctx.beginPath();
-    this.ctx.strokeStyle = strokeStyle;
+    this.ctx.strokeStyle = color;
     this.ctx.moveTo(x, y);
     this.ctx.lineTo(offsetX, offsetY);
     this.ctx.stroke();
@@ -110,6 +116,7 @@ class Canvas extends Component {
   }
 
   sendPaintData() {
+    this.sentPaintData = true;
     const body = {
       line: this.line,
       userId: this.props.user.userId,
@@ -130,7 +137,7 @@ class Canvas extends Component {
           ref={(ref) => (this.canvas = ref)}
           style={{ background: 'white', border: '1px solid black' }}
           onMouseDown={this.onMouseDown}
-          onMouseLeave={this.endPaintEvent}
+          onMouseLeave={(e) => this.endPaintEvent}
           onMouseUp={this.endPaintEvent}
           onMouseMove={this.onMouseMove}
         />
