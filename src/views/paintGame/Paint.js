@@ -2,6 +2,7 @@ import React, { Fragment } from 'react';
 import UserList from './UserList';
 import Canvas from './Canvas';
 import ColorSelector from './ColorSelector';
+import './Paint.css';
 
 export class Paint extends React.Component {
   constructor(props) {

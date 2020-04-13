@@ -10,6 +10,7 @@ class PaintCursor extends React.Component {
     this.state = {
       cursorTop: '50%',
       cursorLeft: '50%',
+      display: 'none',
     };
   }
 
@@ -25,6 +26,16 @@ class PaintCursor extends React.Component {
         cursorLeft: event.pageX - brushCursorOffset[this.props.paint.brushSize],
       });
     });
+    cursorContainer.addEventListener('mouseenter', (event) => {
+      this.setState({
+        display: 'block',
+      });
+    });
+    cursorContainer.addEventListener('mouseleave', (event) => {
+      this.setState({
+        display: 'none',
+      });
+    });
   }
 
   render() {
@@ -35,6 +46,7 @@ class PaintCursor extends React.Component {
       width: `${brushSize}px`,
       top: this.state.cursorTop,
       left: this.state.cursorLeft,
+      display: this.state.display,
     };
     return <div id="paintCursor" style={cursorStyle}></div>;
   }

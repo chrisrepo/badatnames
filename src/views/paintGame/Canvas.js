@@ -137,7 +137,7 @@ class Canvas extends Component {
           ref={(ref) => (this.canvas = ref)}
           style={{ background: 'white', border: '1px solid black' }}
           onMouseDown={this.onMouseDown}
-          onMouseLeave={(e) => this.endPaintEvent}
+          onMouseLeave={this.endPaintEvent}
           onMouseUp={this.endPaintEvent}
           onMouseMove={this.onMouseMove}
         />
