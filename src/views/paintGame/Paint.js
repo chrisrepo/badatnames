@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import UserList from './UserList';
 import Canvas from './Canvas';
-import { ColorSelector } from './ColorSelector';
+import ColorSelector from './ColorSelector';
 
 export class Paint extends React.Component {
   constructor(props) {
@@ -18,11 +18,8 @@ export class Paint extends React.Component {
     return (
       <Fragment>
         <div className="main-paint">
-          <UserList userId={this.props.userId} />
-          <Canvas
-            userId={this.props.userId}
-            selectedColor={this.props.selectedColor}
-          />
+          <UserList />
+          <Canvas selectedColor={this.props.selectedColor} />
           <ColorSelector
             selectedColor={this.props.selectedColor}
             changeSelectedColor={this.props.changeSelectedColor}

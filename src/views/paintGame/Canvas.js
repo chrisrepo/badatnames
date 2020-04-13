@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import PaintCursor from './PaintCursor';
+
+import { canvasContainerRef } from '../../constants';
 
 class Canvas extends Component {
-  static defaultProps = {
-    selectedColor: '#ffffff',
-  };
-
   constructor(props) {
     super(props);
 
@@ -40,7 +39,7 @@ class Canvas extends Component {
     window.console.log('initialize paint');
     this.props.connection.websocket.on('emit-paint', (data) => {
       const { userId, line, color } = data;
-      if (userId !== this.props.userId) {
+      if (userId !== this.props.user.userId) {
         line.forEach((position) => {
           this.paint(position.start, position.stop, color);
         });
@@ -61,6 +60,8 @@ class Canvas extends Component {
     this.prevPos = { offsetX, offsetY };
     this.lineCountStart = 0;
     this.startTime = new Date();
+    this.ctx.lineWidth = this.props.paint.brushSize;
+    window.console.log('start paint');
   }
 
   onMouseMove({ nativeEvent }) {
@@ -72,7 +73,7 @@ class Canvas extends Component {
         stop: { ...offSetData },
       };
       this.line = this.line.concat(this.position);
-      this.paint(this.prevPos, offSetData, this.props.selectedColor);
+      this.paint(this.prevPos, offSetData, this.props.paint.selectedColor);
     }
   }
 
@@ -80,7 +81,7 @@ class Canvas extends Component {
     if (this.isPainting) {
       if (this.line.length === 0) {
         //TODO:!!
-        console.log('dot!');
+        console.log('TODO: fix dots!');
       }
       this.isPainting = false;
       this.sendPaintData(
@@ -111,8 +112,8 @@ class Canvas extends Component {
   sendPaintData() {
     const body = {
       line: this.line,
-      userId: this.props.userId,
-      color: this.props.selectedColor,
+      userId: this.props.user.userId,
+      color: this.props.paint.selectedColor,
     };
     if (this.props.connection.websocket) {
       this.props.connection.websocket.emit('on-paint', body);
@@ -123,19 +124,24 @@ class Canvas extends Component {
 
   render() {
     return (
-      <canvas
-        ref={(ref) => (this.canvas = ref)}
-        style={{ background: 'white', border: '1px solid black' }}
-        onMouseDown={this.onMouseDown}
-        onMouseLeave={this.endPaintEvent}
-        onMouseUp={this.endPaintEvent}
-        onMouseMove={this.onMouseMove}
-      />
+      <div id={canvasContainerRef} style={{ cursor: 'none' }}>
+        <PaintCursor containerRef={canvasContainerRef} />
+        <canvas
+          ref={(ref) => (this.canvas = ref)}
+          style={{ background: 'white', border: '1px solid black' }}
+          onMouseDown={this.onMouseDown}
+          onMouseLeave={this.endPaintEvent}
+          onMouseUp={this.endPaintEvent}
+          onMouseMove={this.onMouseMove}
+        />
+      </div>
     );
   }
 }
 
 const mapStateToProps = (state) => ({
   connection: state.connection,
+  user: state.user,
+  paint: state.paintGame,
 });
 export default connect(mapStateToProps, {})(Canvas);

@@ -35,7 +35,6 @@ class UserList extends React.Component {
   }
 
   render() {
-    console.log('UserList props', this.state);
     return (
       <div>
         {Object.keys(this.state.clientList).map((key, index) => {

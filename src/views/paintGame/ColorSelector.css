@@ -1,0 +1,62 @@
+.palette-wrapper {
+  padding: 10px;
+  border-radius: 5px;
+  margin-left: 10px;
+}
+
+.color-button {
+  position: relative;
+  border-radius: 5px;
+  width: 65px;
+  height: 45px;
+  margin-top: 7px;
+  box-shadow: 1px 0px 7px 0px grey;
+  text-align: center;
+}
+
+.color-button .selected {
+  position: absolute;
+  right: -25px;
+  width: 0;
+  height: 0;
+  margin: 10px 10px 0 0;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+
+  border-right: 10px solid blue;
+}
+
+.color-header {
+  text-align: left;
+  color: #000;
+  font-size: 20px;
+}
+
+.brush-header {
+  margin-top: 20px;
+  margin-bottom: 10px;
+  text-align: left;
+  color: #000;
+  font-size: 20px;
+}
+
+.brush-button {
+  position: relative;
+  border-radius: 50%;
+  margin-top: 10px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: black;
+  box-shadow: 1px 0px 7px 0px grey;
+  text-align: center;
+}
+
+.brush-button .selected {
+  position: absolute;
+  right: -10px;
+  width: 0;
+  height: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-right: 5px solid blue;
+}

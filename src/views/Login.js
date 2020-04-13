@@ -1,7 +1,8 @@
 import React from 'react';
-import socketIOClient from 'socket.io-client';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
+
+import { setUser } from '../redux/actions';
 
 // Local Imports
 import './Login.css';
@@ -19,16 +20,16 @@ class Login extends React.Component {
 
   joinCanvas = () => {
     this.sendJoinData();
-    this.props.setUser(this.state.username);
     this.props.history.push('/paint');
   };
 
   sendJoinData() {
-    if (this.props.websocket) {
+    if (this.props.connection.websocket) {
       const body = {
         username: this.state.username,
         id: this.props.connection.websocket.id,
       };
+      this.props.setUser({ username: this.state.username });
       this.props.connection.websocket.emit('on-join', body);
     }
   }
@@ -59,4 +60,4 @@ class Login extends React.Component {
 const mapStateToProps = (state) => ({
   connection: state.connection,
 });
-export default connect(mapStateToProps, {})(withRouter(Login));
+export default connect(mapStateToProps, { setUser })(withRouter(Login));
