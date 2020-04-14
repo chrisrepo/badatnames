@@ -8,7 +8,7 @@ import { socketEndpoint } from './constants';
 import { connect } from 'react-redux';
 
 import './App.css';
-import Login from './views/Login';
+import Login from './views/login/Login';
 import { v4 } from 'uuid';
 import { Paint } from './views/paintGame/Paint';
 import { setWebsocketConnection, setUser } from './redux/actions';
@@ -64,6 +64,9 @@ class App extends Component {
           </Route>
           <Route path="/paint" exact>
             <Paint />
+          </Route>
+          <Route path="/pong" exact>
+            <div>Page does not exist</div>
           </Route>
         </Router>
       );

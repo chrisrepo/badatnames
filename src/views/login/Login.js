@@ -2,7 +2,9 @@ import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import { setUser } from '../redux/actions';
+import GameSelector from './GameSelector';
+import { setUser } from '../../redux/actions';
+import { gamesMap } from '../../constants';
 
 // Local Imports
 import './Login.css';
@@ -20,7 +22,7 @@ class Login extends React.Component {
 
   joinCanvas = () => {
     this.sendJoinData();
-    this.props.history.push('/paint');
+    this.props.history.push(gamesMap[this.props.gameSelector.selectedGame]);
   };
 
   sendJoinData() {
@@ -37,6 +39,9 @@ class Login extends React.Component {
   render() {
     return (
       <div className="main-page-wrapper">
+        <div id="gameSelectorContainer">
+          <GameSelector />
+        </div>
         <div className="log-in">
           <div className="form__group field">
             <input
@@ -59,5 +64,6 @@ class Login extends React.Component {
 
 const mapStateToProps = (state) => ({
   connection: state.connection,
+  gameSelector: state.gameSelector,
 });
 export default connect(mapStateToProps, { setUser })(withRouter(Login));

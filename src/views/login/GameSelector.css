@@ -1,0 +1,25 @@
+#gameSelector {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: center;
+  margin: 40px 60px;
+}
+
+#gameDescription {
+  margin: auto;
+  padding: 10px 15px;
+  text-align: center;
+  border-radius: 10px;
+  background-color: rgba(0, 26, 255, 0.1);
+  width: 30%;
+}
+
+#gameDescriptionHeader {
+  font-size: 1.2em;
+  font-weight: bold;
+  padding-bottom: 10px;
+}
+
+#gameDescriptionText {
+}
