@@ -29,4 +29,11 @@ export const brushCursorOffset = {
   15: 9,
   25: 15,
 };
-export const brushSelectedMarginTop = [-1, 6, 15];
+export const brushSelectedMarginTop = [-2, 4, 10];
+
+export const getbrushContrastColor = (color) => {
+  if (color === colorValueMap.BLACK) {
+    return '#03fc0b';
+  }
+  return '#000000';
+};

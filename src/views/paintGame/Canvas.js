@@ -37,6 +37,7 @@ class Canvas extends Component {
 
   initializeWebsocketPaintListener() {
     window.console.log('initialize paint');
+    this.props.connection.websocket.emit('join-paint');
     this.props.connection.websocket.on('emit-paint', (data) => {
       const { userId, line, color } = data;
       if (userId !== this.props.user.userId) {
@@ -44,6 +45,10 @@ class Canvas extends Component {
           this.paint(position.start, position.stop, color);
         });
       }
+    });
+    this.props.connection.websocket.on('emit-clear-canvas', (data) => {
+      window.console.log('clear canvas recieevetd');
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     });
   }
 

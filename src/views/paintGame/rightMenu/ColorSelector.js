@@ -1,14 +1,15 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { setColor, setBrushSize } from '../../redux/actions';
+import { setColor, setBrushSize } from '../../../redux/actions';
 import {
   colorValueMap,
   colorList,
   brushSizes,
   brushSelectedMarginTop,
-} from '../../constants';
+} from '../../../constants';
 import './ColorSelector.css';
+import ClearCanvasButton from './ClearCanvasButton';
 
 class ColorSelector extends React.Component {
   constructor(props) {
@@ -47,17 +48,18 @@ class ColorSelector extends React.Component {
       const isSelected = size === this.props.paint.brushSize;
       return (
         <div
+          className={`brush-button-container${index}`}
           key={index}
-          className="brush-button"
-          style={style}
           onClick={() => this.props.setBrushSize(size)}
         >
-          {isSelected ? (
-            <span
-              className="selected"
-              style={{ marginTop: brushSelectedMarginTop[index] }}
-            ></span>
-          ) : null}
+          <div className="brush-button" style={style}>
+            {isSelected ? (
+              <span
+                className="selected"
+                style={{ marginTop: brushSelectedMarginTop[index] }}
+              ></span>
+            ) : null}
+          </div>
         </div>
       );
     });
@@ -69,7 +71,8 @@ class ColorSelector extends React.Component {
         <div className="color-header">Palette</div>
         {this.getColorList()}
         <div className="brush-header">Brush Size</div>
-        {this.getBrushList()}
+        <div id="brush-list-container">{this.getBrushList()}</div>
+        <ClearCanvasButton />
       </div>
     );
   }

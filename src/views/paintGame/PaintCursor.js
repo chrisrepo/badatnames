@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { brushCursorOffset } from '../../constants';
+import { brushCursorOffset, getbrushContrastColor } from '../../constants';
 
 import './PaintCursor.css';
 
@@ -40,6 +40,7 @@ class PaintCursor extends React.Component {
 
   render() {
     const brushSize = this.props.paint.brushSize * 1.25;
+    const contrastColor = getbrushContrastColor(this.props.paint.selectedColor);
     const cursorStyle = {
       background: this.props.paint.selectedColor,
       height: `${brushSize}px`,
@@ -47,6 +48,7 @@ class PaintCursor extends React.Component {
       top: this.state.cursorTop,
       left: this.state.cursorLeft,
       display: this.state.display,
+      border: `1px solid ${contrastColor}`,
     };
     return <div id="paintCursor" style={cursorStyle}></div>;
   }

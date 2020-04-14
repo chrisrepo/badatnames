@@ -40,6 +40,44 @@
   font-size: 20px;
 }
 
+#brush-list-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.brush-button-container0 {
+  border-radius: 5px;
+  width: 30px;
+  height: 30px;
+  margin-bottom: 2px;
+}
+
+.brush-button-container0:hover {
+  background-color: rgba(83, 83, 83, 0.529);
+}
+
+.brush-button-container1:hover {
+  background-color: rgba(83, 83, 83, 0.529);
+}
+
+.brush-button-container2:hover {
+  background-color: rgba(83, 83, 83, 0.529);
+}
+
+.brush-button-container1 {
+  border-radius: 5px;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 2px;
+}
+.brush-button-container2 {
+  border-radius: 5px;
+  width: 50px;
+  height: 50px;
+  margin-bottom: 2px;
+}
+
 .brush-button {
   position: relative;
   border-radius: 50%;

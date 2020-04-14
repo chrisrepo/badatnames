@@ -14,35 +14,42 @@ const io = socketIo(server);
 var clientList = [];
 
 //Setting up a socket with the namespace "connection" for new sockets
-io.on('connection', socket => {
+io.on('connection', (socket) => {
   clientList[socket.id] = { id: socket.id };
 
-  socket.on('update-user', data => {
-    clientList[socket.id].username = data.username;
-    const list = Object.assign({}, clientList);
-    socket.broadcast.emit('emit-join', list);
-  });
-
-  socket.on('on-join-request', data => {
+  socket.on('on-join-request', (data) => {
     // Need to clone object when using 'io' api directly, or it will reference the original unmodified clientList
     const list = Object.assign({}, clientList);
     io.to(socket.id).emit('emit-join', list);
   });
 
-  //Here we listen on a new namespace called "incoming data"
-  socket.on('on-paint', data => {
-    //Here we broadcast it out to all other sockets EXCLUDING the socket which sent us the data
-    socket.broadcast.emit('emit-paint', data);
+  socket.on('on-paint', (data) => {
+    socket.to('paintRoom').emit('emit-paint', data);
   });
 
-  //Here we listen on a new namespace called "incoming data"
-  socket.on('on-join', data => {
-    clientList[socket.id].username = data.username;
-    //Here we broadcast it out to all other sockets EXCLUDING the socket which sent us the data
-    const list = Object.assign({}, clientList);
-    console.log('on join: ', list);
-    socket.broadcast.emit('emit-join', list);
+  //TODO: Join a dynamic room based on data passed in (insteand of join paint it would be join-room)
+  socket.on('join-paint', (data) => {
+    socket.join('paintRoom');
   });
+
+  socket.on('on-clear-vote', (data) => {
+    console.log('clear vote', data);
+    io.in('paintRoom').emit('emit-clear-canvas', data);
+  });
+
+  socket.on('on-join', (data) => {
+    onJoinRejoin(data);
+  });
+
+  socket.on('update-user', (data) => {
+    onJoinRejoin(data);
+  });
+
+  const onJoinRejoin = (data) => {
+    clientList[socket.id].username = data.username;
+    const list = Object.assign({}, clientList);
+    socket.broadcast.emit('emit-join', list);
+  };
 
   //A special namespace "disconnect" for when a client disconnects
   socket.on('disconnect', () => {
