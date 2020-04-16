@@ -3,38 +3,73 @@ import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import GameSelector from './GameSelector';
-import { setUser } from '../../redux/actions';
-import { gamesMap } from '../../constants';
+import { setUser, setLobby } from '../../redux/actions';
 
 // Local Imports
 import './Login.css';
+import JoinSelector from './JoinSelector';
 
 class Login extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { username: '' };
-    this.handleChange = this.handleChange.bind(this);
+    this.state = { username: '', lobbyId: '', error: undefined };
   }
 
-  handleChange(event) {
-    this.setState({ username: event.target.value });
+  componentDidMount() {
+    this.props.connection.websocket
+      .off('emit-join-lobby')
+      .on('emit-join-lobby', (data) => {
+        if (data.error) {
+          this.setState({
+            error: data.error,
+          });
+          return;
+        } else {
+          const lobbyId = data.lobbyId;
+          const lobby = data.lobby;
+          const setLobbyObj = {
+            ...lobby,
+          };
+          if (lobbyId) {
+            setLobbyObj.lobbyId = lobbyId;
+          }
+          this.props.setLobby({
+            ...setLobbyObj,
+          });
+          this.joinLobby();
+        }
+      });
   }
 
-  joinCanvas = () => {
-    this.sendJoinData();
-    this.props.history.push(gamesMap[this.props.gameSelector.selectedGame]);
+  joinLobby = () => {
+    this.props.history.push('/lobby');
   };
 
-  sendJoinData() {
-    if (this.props.connection.websocket) {
-      const body = {
+  handleUsernameChange = (event) => {
+    this.setState({ username: event.target.value });
+  };
+  handleLobbyIdChange = (event) => {
+    this.setState({ lobbyId: event.target.value });
+  };
+
+  goButtonClicked = () => {
+    const type = this.props.gameSelector.connectionType;
+    let body = {};
+    if (type === 'join') {
+      body = {
+        game: this.props.gameSelector.selectedGame,
         username: this.state.username,
-        id: this.props.connection.websocket.id,
+        lobbyId: this.state.lobbyId,
       };
-      this.props.setUser({ username: this.state.username });
-      this.props.connection.websocket.emit('on-join', body);
+    } else {
+      body = {
+        game: this.props.gameSelector.selectedGame,
+        username: this.state.username,
+      };
     }
-  }
+    window.console.log('go clicked', type, `${type}-lobby`, body);
+    this.props.connection.websocket.emit(`${type}-lobby`, body);
+  };
 
   render() {
     return (
@@ -42,19 +77,32 @@ class Login extends React.Component {
         <div id="gameSelectorContainer">
           <GameSelector />
         </div>
+        <JoinSelector />
         <div className="log-in">
           <div className="form__group field">
             <input
               type="text"
               value={this.state.username}
-              onChange={this.handleChange}
+              onChange={this.handleUsernameChange}
               className="form__field"
               placeholder="Username"
             />
             <label className="form__label">Username</label>
           </div>
+          {this.props.gameSelector.connectionType === 'join' && (
+            <div className="form__group field">
+              <input
+                type="text"
+                value={this.state.lobbyId}
+                onChange={this.handleLobbyIdChange}
+                className="form__field"
+                placeholder="Lobby Code"
+              />
+              <label className="form__label">Lobby Code</label>
+            </div>
+          )}
           <div>
-            <button onClick={this.joinCanvas}>Join</button>
+            <button onClick={() => this.goButtonClicked()}>Go</button>
           </div>
         </div>
       </div>
@@ -66,4 +114,6 @@ const mapStateToProps = (state) => ({
   connection: state.connection,
   gameSelector: state.gameSelector,
 });
-export default connect(mapStateToProps, { setUser })(withRouter(Login));
+export default connect(mapStateToProps, { setUser, setLobby })(
+  withRouter(Login)
+);

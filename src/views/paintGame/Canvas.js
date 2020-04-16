@@ -37,7 +37,6 @@ class Canvas extends Component {
 
   initializeWebsocketPaintListener() {
     window.console.log('initialize paint');
-    this.props.connection.websocket.emit('join-paint');
     this.props.connection.websocket.on('emit-paint', (data) => {
       const { userId, line, color } = data;
       if (userId !== this.props.user.userId) {
@@ -126,6 +125,7 @@ class Canvas extends Component {
       line: this.line,
       userId: this.props.user.userId,
       color: this.props.paint.selectedColor,
+      lobbyId: this.props.lobby.lobbyId,
     };
     if (this.props.connection.websocket) {
       this.props.connection.websocket.emit('on-paint', body);
@@ -153,6 +153,7 @@ class Canvas extends Component {
 
 const mapStateToProps = (state) => ({
   connection: state.connection,
+  lobby: state.lobby,
   user: state.user,
   paint: state.paintGame,
 });

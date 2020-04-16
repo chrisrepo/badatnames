@@ -6,6 +6,7 @@ class ClearCanvasButton extends React.Component {
     window.console.log('clear canvas voted', this.props);
     const body = {
       userId: this.props.user.userId,
+      lobbyId: this.props.lobby.lobbyId,
     };
     this.props.websocket.emit('on-clear-vote', body);
   };
@@ -19,5 +20,6 @@ class ClearCanvasButton extends React.Component {
 const mapStateToProps = (state) => ({
   websocket: state.connection.websocket,
   user: state.user,
+  lobby: state.lobby,
 });
 export default connect(mapStateToProps, {})(ClearCanvasButton);

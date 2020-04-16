@@ -12,6 +12,7 @@ import Login from './views/login/Login';
 import { v4 } from 'uuid';
 import { Paint } from './views/paintGame/Paint';
 import { setWebsocketConnection, setUser } from './redux/actions';
+import LobbyView from './views/pregameLobby/LobbyView';
 
 class App extends Component {
   constructor(props) {
@@ -61,6 +62,9 @@ class App extends Component {
         <Router history={history}>
           <Route path="/" exact>
             <Login />
+          </Route>
+          <Route path="/lobby">
+            <LobbyView />
           </Route>
           <Route path="/paint" exact>
             <Paint />

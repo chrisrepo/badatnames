@@ -34,3 +34,12 @@ export const gamesDescription = {
     desc: 'Just a temporary placeholder for a future game',
   },
 };
+
+export const joinOptions = {
+  join: {
+    label: 'Join Game',
+  },
+  create: {
+    label: 'Create Game',
+  },
+};
