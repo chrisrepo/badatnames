@@ -6,13 +6,6 @@ import { setLobby } from '../../redux/actions';
 import './LobbyView.css';
 import SocketConnection from '../../common/websocket/SocketConnection';
 class LobbyView extends React.Component {
-  componentDidMount() {
-    // Redirect to home if no lobby detected
-    if (this.props.lobby.lobbyId.length === 0) {
-      this.props.history.push('/');
-    }
-  }
-
   startButtonClicked = () => {
     this.props.history.push('/paint');
   };

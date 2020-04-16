@@ -1,12 +1,17 @@
 import React, { Fragment } from 'react';
 import { connect } from 'react-redux';
 import { setLobby } from '../../redux/actions';
+import { withRouter } from 'react-router-dom';
 
 // Empty Component that can be used for socket connections to prevent duplicat on listener code
 class SocketConnection extends React.Component {
   componentDidMount() {
     if (this.props.connection.websocket !== null) {
       if (this.props.lobby) {
+        // Redirect to home if no lobby detected
+        if (this.props.lobby.lobbyId.length === 0) {
+          this.props.history.push('/');
+        }
         this.initializeLobbyListener();
       }
     }
@@ -58,4 +63,6 @@ const mapStateToProps = (state) => ({
   lobby: state.lobby,
   user: state.user,
 });
-export default connect(mapStateToProps, { setLobby })(SocketConnection);
+export default connect(mapStateToProps, { setLobby })(
+  withRouter(SocketConnection)
+);
