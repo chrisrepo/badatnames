@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 
 import GameSelector from './GameSelector';
 import { setUser, setLobby } from '../../redux/actions';
+import { gamesMap } from '../../constants';
 
 // Local Imports
 import './Login.css';
@@ -36,14 +37,16 @@ class Login extends React.Component {
           this.props.setLobby({
             ...setLobbyObj,
           });
-          this.joinLobby();
+          // Join game or join lobby
+          if (lobby.started) {
+            const route = gamesMap[this.props.gameSelector.selectedGame];
+            this.props.history.push(route);
+          } else {
+            this.props.history.push('/lobby');
+          }
         }
       });
   }
-
-  joinLobby = () => {
-    this.props.history.push('/lobby');
-  };
 
   handleUsernameChange = (event) => {
     this.setState({ username: event.target.value });

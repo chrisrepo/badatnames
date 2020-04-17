@@ -7,6 +7,7 @@ class UserList extends React.Component {
     return (
       <div>
         <SocketConnection lobby={true} />
+        <h3>Lobby Id: {this.props.lobby.lobbyId}</h3>
         {Object.keys(this.props.lobby.clientList).map((key, index) => {
           const client = this.props.lobby.clientList[key];
           return <div key={index}>{client.username}</div>;

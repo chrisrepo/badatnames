@@ -34,11 +34,11 @@ io.on('connection', (socket) => {
     clientList[socket.id] = { id: socket.id, username };
     lobbyList[roomId] = {
       host: socket.id,
+      started: false,
       clientList,
     };
     socket.join(roomId);
     const lobby = Object.assign({}, lobbyList[roomId]);
-    console.log('create', lobby, lobbyList[roomId]);
     io.in(roomId).emit('emit-join-lobby', { lobby, lobbyId });
   });
 
@@ -60,6 +60,12 @@ io.on('connection', (socket) => {
         error: 'could not find room',
       });
     }
+  });
+
+  socket.on('on-start-game', (data) => {
+    const roomId = data.gameType + '-' + data.lobbyId;
+    lobbyList[roomId].started = true;
+    io.to(roomId).emit('emit-start-game');
   });
 
   socket.on('on-paint', (data) => {
@@ -98,21 +104,13 @@ io.on('connection', (socket) => {
       const rooms = Object.keys(io.sockets.adapter.sids[socket.id]).filter(
         (item) => item !== socket.id
       );
-      console.log('try migrating host', rooms);
       if (rooms.length > 0) {
         for (let i = 0; i < rooms.length; i++) {
           const room = lobbyList[rooms[i]];
-          console.log('migrating from room', room, rooms[i], lobbyList);
           if (!room) return;
           const newClientList = utils.filterOutDisconnectedClient(
             room.clientList,
             socket.id
-          );
-          console.log(
-            'new client list',
-            room.host,
-            socket.id,
-            Object.keys(room.clientList).length
           );
           if (
             room.host === socket.id &&
@@ -121,12 +119,6 @@ io.on('connection', (socket) => {
             const newHostKey = Object.keys(newClientList)[0];
             const newHost = newClientList[newHostKey].id;
             lobbyList[rooms[i]].host = newHost;
-            console.log(
-              'Host migration for room ',
-              rooms[i],
-              ' new host:',
-              newHost
-            );
             io.to(newHost).emit('host-migration');
           }
           // Emit to room that it's left
