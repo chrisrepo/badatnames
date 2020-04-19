@@ -1,6 +1,8 @@
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
+const path = require('path');
+const jsdom = require('jsdom');
 
 const utils = require('./websocket/utils');
 //Port from environment variable or default - 4001
@@ -12,6 +14,7 @@ const server = http.createServer(app);
 const io = socketIo(server);
 
 // Server vars
+const { JSDOM } = jsdom;
 var clientList = [];
 var lobbyList = {};
 
@@ -57,7 +60,7 @@ io.on('connection', (socket) => {
       io.in(roomId).emit('emit-join-lobby', { lobby, lobbyId });
     } else {
       io.to(socket.id).emit('emit-join-lobby', {
-        error: 'could not find room',
+        error: 'Could not find room with code: ' + lobbyId,
       });
     }
   });
@@ -138,5 +141,25 @@ io.on('connection', (socket) => {
     console.log('Client disconnected - new list', list);
   });
 });
-
+function setupAuthoritativePhaser() {
+  JSDOM.fromFile(path.join(__dirname, 'authoritative_server/index.html'), {
+    // To run the scripts in the html file
+    runScripts: 'dangerously',
+    // Also load supported external resources
+    resources: 'usable',
+    // So requestAnimatinFrame events fire
+    pretendToBeVisual: true,
+  })
+    .then((dom) => {
+      dom.window.gameLoaded = () => {
+        server.listen(8081, function () {
+          console.log(`Listening on ${server.address().port}`);
+        });
+      };
+    })
+    .catch((error) => {
+      console.log(error.message);
+    });
+}
+setupAuthoritativePhaser();
 server.listen(port, () => console.log(`Listening on port ${port}`));

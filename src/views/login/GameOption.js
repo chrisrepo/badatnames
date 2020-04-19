@@ -1,7 +1,8 @@
 import React from 'react';
-import './GameOption.css';
+import Carousel from 'react-bootstrap/Carousel';
 
 import { selectGame } from '../../redux/actions';
+import { gamesDescription } from '../../constants';
 import { connect } from 'react-redux';
 
 class GameOption extends React.Component {
@@ -18,11 +19,20 @@ class GameOption extends React.Component {
   };
 
   render() {
-    const classes = `gameOption${this.props.selected ? ' selected' : ''}`;
+    const selectedGame = gamesDescription[this.props.gameName];
     return (
-      <div className={classes} onClick={this.gameOptionClicked}>
-        {this.renderGameButton()}
-      </div>
+      <Carousel.Item>
+        <img
+          className="d-block w-100"
+          src="https://knowpathology.com.au/app/uploads/2018/07/Happy-Test-Screen-01-825x510.png"
+          alt={`${selectedGame.name} Slide`}
+          style={{ width: '400px', height: '400px' }}
+        />
+        <Carousel.Caption>
+          <h3>{selectedGame.name}</h3>
+          <p>{selectedGame.desc}</p>
+        </Carousel.Caption>
+      </Carousel.Item>
     );
   }
 }
