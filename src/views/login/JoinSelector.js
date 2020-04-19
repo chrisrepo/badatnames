@@ -15,15 +15,17 @@ class JoinSelector extends React.Component {
   renderOptions = () => {
     return Object.keys(joinOptions).map((key, index) => {
       const selected =
-        this.props.gameSelector.connectionType === key ? ' selected' : '';
+        this.props.gameSelector.connectionType === key
+          ? ' btn-primary'
+          : ' btn-secondary';
       return (
-        <div
-          className={`join-selector-option${selected}`}
+        <button
+          className={`join-selector-option btn${selected}`}
           onClick={() => this.joinOptionClicked(key)}
           key={index}
         >
           {joinOptions[key].label}
-        </div>
+        </button>
       );
     });
   };

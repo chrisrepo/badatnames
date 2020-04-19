@@ -1,10 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { setLobby } from '../../redux/actions';
-import { gamesMap } from '../../constants';
+import Container from 'react-bootstrap/Container';
 
 import './LobbyView.css';
+
+import { setLobby } from '../../redux/actions';
+import { gamesMap } from '../../constants';
+import UserList from '../../common/users/UserList';
 import SocketConnection from '../../common/websocket/SocketConnection';
 class LobbyView extends React.Component {
   componentDidMount() {
@@ -13,6 +16,7 @@ class LobbyView extends React.Component {
       this.props.history.push(route);
     });
   }
+
   startButtonClicked = () => {
     const body = {
       lobbyId: this.props.lobby.lobbyId,
@@ -21,26 +25,23 @@ class LobbyView extends React.Component {
     this.props.connection.websocket.emit('on-start-game', body);
   };
 
+  renderUserListGroup;
+
   render() {
+    const gameType = this.props.gameSelector.selectedGame;
     const showHostStartButton =
       this.props.lobby.host === this.props.connection.websocket.id;
     return (
-      <div>
+      <Container className="lobbyViewContainer">
         <SocketConnection lobby={true}></SocketConnection>
-        <h3>{this.props.lobby.lobbyId}</h3>
-        {Object.keys(this.props.lobby.clientList).map((key, index) => {
-          const client = this.props.lobby.clientList[key];
-          const isHost = this.props.lobby.host === key ? 'host' : '';
-          return (
-            <div className={isHost} key={index}>
-              {client.username}
-            </div>
-          );
-        })}
+        <h4>Lobby Code: {gameType + '-' + this.props.lobby.lobbyId}</h4>
+        <UserList lobby={this.props.lobby} />
         {showHostStartButton && (
-          <button onClick={this.startButtonClicked}>Start</button>
+          <button className="btn btn-primary" onClick={this.startButtonClicked}>
+            Start
+          </button>
         )}
-      </div>
+      </Container>
     );
   }
 }

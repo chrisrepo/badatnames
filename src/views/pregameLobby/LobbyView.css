@@ -2,3 +2,16 @@
   border: 1px solid blue;
   border-radius: 5px;
 }
+#player-card-container {
+  display: flex;
+  margin-bottom: 2em;
+}
+#player-card-container .card {
+  margin-right: 1.5em;
+}
+#player-card-container .card .card-body {
+  padding: 0.5rem 1rem 0.5rem 1rem;
+}
+#player-card-container .card .card-title {
+  margin-bottom: 0px;
+}

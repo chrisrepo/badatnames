@@ -1,13 +1,18 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
+import Form from 'react-bootstrap/Form';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import InputGroup from 'react-bootstrap/InputGroup';
+import Alert from 'react-bootstrap/Alert';
 
 import GameSelector from './GameSelector';
 import { setUser, setLobby } from '../../redux/actions';
 import { gamesMap } from '../../constants';
-
-// Local Imports
 import './Login.css';
+// Local Imports
 import JoinSelector from './JoinSelector';
 
 class Login extends React.Component {
@@ -51,14 +56,30 @@ class Login extends React.Component {
   handleUsernameChange = (event) => {
     this.setState({ username: event.target.value });
   };
+
   handleLobbyIdChange = (event) => {
     this.setState({ lobbyId: event.target.value });
+  };
+
+  validInputs = () => {
+    const type = this.props.gameSelector.connectionType;
+    if (type === 'join' && this.state.lobbyId.length === 0) {
+      this.setState({ error: 'Lobby Code cannot be blank when joining game' });
+      return false;
+    } else if (this.state.username.length === 0) {
+      this.setState({ error: 'Username cannot be blank' });
+      return false;
+    }
+    return true;
   };
 
   goButtonClicked = () => {
     const type = this.props.gameSelector.connectionType;
     let body = {};
-    if (type === 'join') {
+    if (!this.validInputs()) {
+      return;
+    }
+    if (type === 'join' && this.state.lobbyId.length > 0) {
       body = {
         game: this.props.gameSelector.selectedGame,
         username: this.state.username,
@@ -70,44 +91,82 @@ class Login extends React.Component {
         username: this.state.username,
       };
     }
-    window.console.log('go clicked', type, `${type}-lobby`, body);
+    // Reset error state
+    this.setState({
+      error: undefined,
+    });
     this.props.connection.websocket.emit(`${type}-lobby`, body);
   };
 
+  renderError = () => {
+    return (
+      <Row>
+        <Col md={{ span: 4, offset: 4 }}>
+          <Alert variant="danger">{this.state.error}</Alert>
+        </Col>
+      </Row>
+    );
+  };
+
+  renderLobbyCodeInput = () => {
+    const selectedGame = this.props.gameSelector.selectedGame;
+    return (
+      <Row>
+        <Col md={{ span: 4, offset: 4 }}>
+          <Form.Group>
+            <Form.Label>Lobby Code</Form.Label>
+            <InputGroup className="mb-3">
+              <InputGroup.Prepend>
+                <InputGroup.Text id="basic-addon1">
+                  {selectedGame}-
+                </InputGroup.Text>
+              </InputGroup.Prepend>
+              <Form.Control type="text" onChange={this.handleLobbyIdChange} />
+            </InputGroup>
+          </Form.Group>
+        </Col>
+      </Row>
+    );
+  };
+
+  renderUserInput = () => {
+    return (
+      <Row>
+        <Col md={{ span: 4, offset: 4 }}>
+          <Form.Group>
+            <Form.Label>Username</Form.Label>
+            <Form.Control type="text" onChange={this.handleUsernameChange} />
+          </Form.Group>
+        </Col>
+      </Row>
+    );
+  };
+
   render() {
+    const selectedGame = this.props.gameSelector.selectedGame;
+    const goButtonText = `Play ${selectedGame}`;
     return (
       <div className="main-page-wrapper">
         <div id="gameSelectorContainer">
           <GameSelector />
         </div>
         <JoinSelector />
-        <div className="log-in">
-          <div className="form__group field">
-            <input
-              type="text"
-              value={this.state.username}
-              onChange={this.handleUsernameChange}
-              className="form__field"
-              placeholder="Username"
-            />
-            <label className="form__label">Username</label>
-          </div>
-          {this.props.gameSelector.connectionType === 'join' && (
-            <div className="form__group field">
-              <input
-                type="text"
-                value={this.state.lobbyId}
-                onChange={this.handleLobbyIdChange}
-                className="form__field"
-                placeholder="Lobby Code"
-              />
-              <label className="form__label">Lobby Code</label>
-            </div>
-          )}
-          <div>
-            <button onClick={() => this.goButtonClicked()}>Go</button>
-          </div>
-        </div>
+        <Container className="inputContainer" fluid="md">
+          {this.renderUserInput()}
+          {this.props.gameSelector.connectionType === 'join' &&
+            this.renderLobbyCodeInput()}
+          {this.state.error && this.renderError()}
+          <Row>
+            <Col md={{ span: 2, offset: 4 }}>
+              <button
+                className="btn btn-success"
+                onClick={() => this.goButtonClicked()}
+              >
+                {goButtonText}
+              </button>
+            </Col>
+          </Row>
+        </Container>
       </div>
     );
   }

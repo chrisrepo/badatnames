@@ -4,15 +4,10 @@
   justify-content: center;
 }
 
-.join-selector-option {
-  background-color: skyblue;
-  margin: 5px;
-  padding: 5px;
-  border-radius: 5px;
-  cursor: pointer;
+.join-selector-option:first-of-type {
+  border-radius: 5px 0px 0px 5px;
 }
 
-.join-selector-option.selected {
-  border: 2px solid blue;
-  margin: 3px;
+.join-selector-option:last-of-type {
+  border-radius: 0px 5px 5px 0px;
 }

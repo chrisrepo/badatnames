@@ -8,6 +8,7 @@ import { socketEndpoint } from './constants';
 import { connect } from 'react-redux';
 
 import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import Login from './views/login/Login';
 import { v4 } from 'uuid';
 import { Paint } from './views/paintGame/Paint';
