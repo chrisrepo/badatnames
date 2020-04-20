@@ -6,8 +6,8 @@ export class PongView extends React.Component {
   render() {
     return (
       <div id="pong-container">
-        <PongUI />
         <PongGame />
+        <PongUI />
       </div>
     );
   }

@@ -1,19 +1,18 @@
 import React from 'react';
 import Phaser from 'phaser';
+import { connect } from 'react-redux';
 
+import { store } from '../../index';
+import { setScore, PONG_ACTIONS } from '../../redux/actions';
 import { GAME_WIDTH, GAME_HEIGHT } from './config';
+import { GameTracker } from './components/GameTracker';
 import * as Paddle from './components/Paddle';
 import * as Ball from './components/Ball';
-import { GameTracker } from './components/GameTracker';
-import { PongEventEmitter } from './components/PongEventEmitter';
 
 import './PongGame.css';
 
-export default class PongGame extends React.Component {
+class PongGame extends React.Component {
   componentDidMount() {
-    this.emitter = PongEventEmitter.getInstance();
-    this.emitter.on('player-scored', this.handlePlayerScore);
-    window.console.log(this.emitter);
     const config = {
       type: Phaser.AUTO,
       width: GAME_WIDTH,
@@ -34,11 +33,19 @@ export default class PongGame extends React.Component {
         create: this.create,
         update: this.update,
         extend: {
+          websocket: this.props.connection.websocket,
           pointScored: this.pointScored,
+          test: this.test,
         },
       },
     };
     this.game = new Phaser.Game(config);
+
+    // Eventing for react
+    this.props.connection.websocket.on('pong-update-score', function (data) {
+      window.console.log('pong update score -client', data);
+      store.dispatch({ type: PONG_ACTIONS.SET_SCORE, payload: data });
+    });
   }
 
   handlePlayerScore = (player) => {
@@ -59,21 +66,21 @@ export default class PongGame extends React.Component {
   ball = undefined;
   emitter = undefined;
   gameTracker = undefined;
+  player = {
+    left: false,
+    right: false,
+    spectator: false,
+  };
 
   create() {
-    // Events
-    window.console.log(this);
-    this.emitter = PongEventEmitter.getInstance();
-    this.emitter.on(
-      'players-ready',
-      function () {
-        // Start game (countdown then ball launch)
-      },
-      this
-    );
+    const self = this;
     // GameTracker
     this.gameTracker = new GameTracker();
-
+    this.player = {
+      left: false,
+      right: false,
+      spectator: false,
+    };
     // Sprites / Physics
     this.paddleLeft = Paddle.createPaddle(this, 15, GAME_HEIGHT / 2);
     this.paddleRight = Paddle.createPaddle(
@@ -84,7 +91,23 @@ export default class PongGame extends React.Component {
     this.ball = Ball.createBall(this, GAME_WIDTH / 2, GAME_HEIGHT / 2);
     this.physics.add.collider(this.paddleLeft, this.ball);
     this.physics.add.collider(this.paddleRight, this.ball);
-    Ball.launch(this.ball);
+
+    // Events
+    this.websocket.emit('pong-player-create-finished'); //This lets the server know that this client is ready to be assigned to a player spot
+    this.websocket.on('pong-launch-ball', function () {
+      self.gameTracker.setRoundEnded(false);
+      window.console.log('launching ball - client');
+      Ball.launch(self.ball);
+    });
+    this.websocket.on('pong-set-player', function (data) {
+      if (data === 'left') {
+        self.player.left = true;
+      } else if (data === 'right') {
+        self.player.right = true;
+      } else {
+        self.player.spectator = true;
+      }
+    });
   }
 
   preload() {
@@ -95,17 +118,18 @@ export default class PongGame extends React.Component {
   update() {
     // TODO: Handle paddle multiplayer (one player per paddle)
     if (!this.gameTracker.roundEnded) {
-      Paddle.controlPaddle(this.paddleLeft, this.input.y);
+      if (this.player.left) {
+        Paddle.controlPaddle(this.paddleLeft, this.input.y);
+      } else if (this.player.right) {
+        Paddle.controlPaddle(this.paddleRight, this.input.y);
+      }
     }
 
-    if (this.ball.body.blocked.left && !this.gameTracker.roundEnded) {
-      this.emitter.emit('player-scored', 'right');
+    const blocked = this.ball.body.blocked;
+    if ((blocked.left || blocked.right) && !this.gameTracker.roundEnded) {
       // Stop ball & paddles
       this.pointScored();
-    }
-    if (this.ball.body.blocked.right && !this.gameTracker.roundEnded) {
-      this.emitter.emit('player-scored', 'left');
-      this.pointScored();
+      Ball.reset(this.ball, GAME_WIDTH / 2, GAME_HEIGHT / 2);
     }
   }
 
@@ -116,3 +140,10 @@ export default class PongGame extends React.Component {
     this.gameTracker.setRoundEnded(true);
   }
 }
+
+const mapStateToProps = (state) => ({
+  connection: state.connection,
+  lobby: state.lobby,
+  user: state.user,
+});
+export default connect(mapStateToProps, { setScore })(PongGame);

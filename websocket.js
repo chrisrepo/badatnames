@@ -3,8 +3,14 @@ const http = require('http');
 const socketIo = require('socket.io');
 const path = require('path');
 const jsdom = require('jsdom');
+const Datauri = require('datauri');
 
 const utils = require('./websocket/utils');
+
+// Headless server vars
+const datauri = new Datauri();
+const { JSDOM } = jsdom;
+
 //Port from environment variable or default - 4001
 const port = process.env.PORT || 4001;
 
@@ -14,12 +20,12 @@ const server = http.createServer(app);
 const io = socketIo(server);
 
 // Server vars
-const { JSDOM } = jsdom;
 var clientList = [];
 var lobbyList = {};
 
 //Setting up a socket with the namespace "connection" for new sockets
 io.on('connection', (socket) => {
+  console.log('main websocket user connected', socket.id);
   clientList[socket.id] = { id: socket.id };
 
   socket.on('on-join-request', (data) => {
@@ -68,7 +74,7 @@ io.on('connection', (socket) => {
   socket.on('on-start-game', (data) => {
     const roomId = data.gameType + '-' + data.lobbyId;
     lobbyList[roomId].started = true;
-    io.to(roomId).emit('emit-start-game');
+    io.to(roomId).emit('emit-start-game', { ballLaunch: true });
   });
 
   socket.on('on-paint', (data) => {
@@ -142,20 +148,25 @@ io.on('connection', (socket) => {
   });
 });
 function setupAuthoritativePhaser() {
-  JSDOM.fromFile(path.join(__dirname, 'authoritative_server/index.html'), {
-    // To run the scripts in the html file
-    runScripts: 'dangerously',
-    // Also load supported external resources
-    resources: 'usable',
-    // So requestAnimatinFrame events fire
-    pretendToBeVisual: true,
+  JSDOM.fromFile(path.join(__dirname, 'gameServers/pongServer/index.html'), {
+    runScripts: 'dangerously', // To run the scripts in the html file
+    resources: 'usable', // Also load supported external resources
+    pretendToBeVisual: true, // So requestAnimatinFrame events fire
   })
     .then((dom) => {
-      dom.window.gameLoaded = () => {
-        server.listen(8081, function () {
-          console.log(`Listening on ${server.address().port}`);
-        });
+      dom.window.URL.createObjectURL = (blob) => {
+        if (blob) {
+          return datauri.format(
+            blob.type,
+            blob[Object.getOwnPropertySymbols(blob)[0]]._buffer
+          ).content;
+        }
       };
+      dom.window.URL.revokeObjectURL = (objectURL) => {};
+      dom.window.gameLoaded = () => {
+        console.log('Serverside Pong Game Loaded');
+      };
+      dom.window.io = io;
     })
     .catch((error) => {
       console.log(error.message);

@@ -12,3 +12,8 @@ export const PONG_ACTIONS = {
 export const togglePong = () => ({
   type: PONG_ACTIONS.TOGGLE,
 });
+
+export const setScore = (score) => ({
+  type: PONG_ACTIONS.TOGGLE,
+  payload: score,
+});

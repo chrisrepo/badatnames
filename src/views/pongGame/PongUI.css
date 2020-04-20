@@ -1,0 +1,28 @@
+#pongUIContainer {
+  display: flex;
+  justify-content: space-evenly;
+  margin-top: 20px;
+  margin-left: 20%;
+  margin-right: 20%;
+}
+
+#pongScoreContainer {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  font-size: 3rem;
+  font-weight: bold;
+}
+
+.pongPlayerCard {
+  display: flex;
+  justify-content: center;
+}
+
+.pongPlayerCard .card-body {
+  padding: 0.25rem 0.5rem;
+}
+
+.pongPlayerCard .card-title {
+  font-size: 0.9rem;
+}

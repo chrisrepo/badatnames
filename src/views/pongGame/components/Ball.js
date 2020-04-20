@@ -1,4 +1,3 @@
-import Phaser from 'phaser';
 import { BALL_VELOCITY } from '../config';
 export function createBall(scene, x, y) {
   const ball = scene.physics.add.sprite(x, y, 'ball');
@@ -13,11 +12,7 @@ export function launch(ball) {
   }, 3000);
 }
 
-export class Ball extends Phaser.GameObjects.Sprite {
-  constructor(scene, x, y) {
-    super(scene, x, y);
-    this.setTexture('ball');
-    this.setCollideWorldBounds(true);
-    this.body.setBounce(1, 1);
-  }
+export function reset(ball, x, y) {
+  ball.setX(x);
+  ball.setY(y);
 }
