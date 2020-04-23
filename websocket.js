@@ -77,20 +77,9 @@ io.on('connection', (socket) => {
     io.to(roomId).emit('emit-start-game', { ballLaunch: true });
   });
 
-  socket.on('on-paint', (data) => {
-    const roomId = 'Paint-' + data.lobbyId;
-    socket.to(roomId).emit('emit-paint', data);
-  });
-
   //TODO: Join a dynamic room based on data passed in (insteand of join paint it would be join-room)
-  socket.on('join-paint', (data) => {
+  /*socket.on('join-paint', (data) => {
     socket.join('paintRoom');
-  });
-
-  socket.on('on-clear-vote', (data) => {
-    console.log('clear vote', data);
-    const roomId = 'Paint-' + data.lobbyId;
-    io.in(roomId).emit('emit-clear-canvas', data);
   });
 
   socket.on('on-join', (data) => {
@@ -105,7 +94,7 @@ io.on('connection', (socket) => {
     clientList[socket.id].username = data.username;
     const list = Object.assign({}, clientList);
     socket.broadcast.emit('emit-join', list);
-  };
+  };*/
 
   socket.on('disconnecting', () => {
     // Emit leave room & reassign
@@ -151,6 +140,9 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('emit-join', list);
     console.log('Client disconnected - new list', list);
   });
+
+  // Game logic
+  require('./websocket/paintWebsocket.js')(io, socket, lobbyList);
 });
 function setupAuthoritativePhaser() {
   JSDOM.fromFile(path.join(__dirname, 'gameServers/pongServer/index.html'), {

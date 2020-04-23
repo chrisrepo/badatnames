@@ -10,7 +10,8 @@ class SocketConnection extends React.Component {
       if (this.props.lobby) {
         // Redirect to home if no lobby detected
         if (this.props.lobby.lobbyId.length === 0) {
-          this.props.history.push('/');
+          //DONT COMMIT THIS CAHNGE
+          //this.props.history.push('/');
         }
         this.initializeLobbyListener();
       }

@@ -3,17 +3,23 @@ import { connect } from 'react-redux';
 
 class ClearCanvasButton extends React.Component {
   clearCanvasClicked = () => {
-    window.console.log('clear canvas voted', this.props);
     const body = {
       userId: this.props.user.userId,
       lobbyId: this.props.lobby.lobbyId,
     };
-    this.props.websocket.emit('on-clear-vote', body);
+    this.props.websocket.emit('paint-on-clear', body);
   };
 
   render() {
-    window.console.log('websocket', this.props.websocket);
-    return <button onClick={this.clearCanvasClicked}>Vote to Clear</button>;
+    // TODO: only show when the user is the drawer
+    if (this.props.websocket.id === this.props.lobby.host) {
+      return (
+        <button className="btn btn-info" onClick={this.clearCanvasClicked}>
+          Clear Canvas
+        </button>
+      );
+    }
+    return null;
   }
 }
 

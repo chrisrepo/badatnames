@@ -1,24 +1,30 @@
 export const canvasContainerRef = 'canvasContainer';
 export const colorList = [
   'RED',
+  'PINK',
   'BLUE',
   'GREEN',
+  'LIGHT_GREEN',
   'YELLOW',
   'PURPLE',
   'ORANGE',
+  'BROWN',
   'WHITE',
   'BLACK',
   'GREY',
 ];
 
 export const colorValueMap = {
-  RED: '#ff0000',
-  BLUE: '#0000ff',
+  RED: '#FF0000',
+  PINK: '#FFC0CB',
+  BLUE: '#0000FF',
   GREEN: '#008000',
-  YELLOW: '#ffff00',
+  LIGHT_GREEN: '#66FF00',
+  YELLOW: '#FFFF00',
   PURPLE: '#800080',
-  ORANGE: '#ffa500',
-  WHITE: '#ffffff',
+  ORANGE: '#FFA500',
+  BROWN: '#8B4513',
+  WHITE: '#FFFFFF',
   BLACK: '#000000',
   GREY: '#808080',
 };

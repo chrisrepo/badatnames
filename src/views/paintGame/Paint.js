@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import UserList from './UserList';
 import Canvas from './Canvas';
-import ColorSelector from './rightMenu/ColorSelector';
+import DrawMenu from './bottomMenu/DrawMenu';
 import './Paint.css';
 import BackgroundImage from '../../common/BackgroundImage';
 
@@ -13,7 +13,9 @@ export class Paint extends React.Component {
         <div className="main-paint">
           <UserList />
           <Canvas />
-          <ColorSelector />
+        </div>
+        <div className="lower-paint">
+          <DrawMenu />
         </div>
       </Fragment>
     );
