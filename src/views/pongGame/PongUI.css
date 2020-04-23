@@ -15,6 +15,7 @@
 }
 
 .pongPlayerCard {
+  position: relative;
   display: flex;
   justify-content: center;
 }
@@ -23,6 +24,21 @@
   padding: 0.25rem 0.5rem;
 }
 
+.pongPlayerCard .host {
+  position: absolute;
+  z-index: 2;
+  top: 5px;
+  right: 5px;
+  margin-left: 5px;
+  font-size: 0.8em;
+  font-weight: bold;
+  background-color: #007bff;
+  padding: 2px 3px;
+  border-radius: 5px;
+  color: white;
+}
+
 .pongPlayerCard .card-title {
   font-size: 0.9rem;
+  margin-bottom: 0.1rem;
 }

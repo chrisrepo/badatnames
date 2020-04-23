@@ -72,6 +72,7 @@ class PongGame extends React.Component {
     spectator: false,
   };
 
+  // TODO: Don't  let paddles move until ready
   create() {
     const self = this;
     // GameTracker
@@ -91,14 +92,33 @@ class PongGame extends React.Component {
     this.ball = Ball.createBall(this, GAME_WIDTH / 2, GAME_HEIGHT / 2);
     this.physics.add.collider(this.paddleLeft, this.ball);
     this.physics.add.collider(this.paddleRight, this.ball);
-
+    this.countdown = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 3, '3', {
+      fontFamily: 'Arial',
+      fontSize: 72,
+      color: '#ffffff',
+    });
+    this.countdown.setOrigin(0.5, 0.5);
+    this.countdown.setAlpha(0);
     // Events
     this.websocket.emit('pong-player-create-finished'); //This lets the server know that this client is ready to be assigned to a player spot
-    this.websocket.on('pong-launch-ball', function () {
+    this.websocket.on('pong-launch-ball', function (data) {
       self.gameTracker.setRoundEnded(false);
-      window.console.log('launching ball - client');
-      Ball.launch(self.ball);
+      window.console.log('launching ball - client', data);
+      // Start countdown
+      self.countdown.setAlpha(1);
+      let time = 3;
+      let interval = setInterval(function () {
+        time--;
+        self.countdown.text = time;
+        if (time === 0) {
+          clearInterval(interval);
+          self.countdown.setAlpha(0);
+          self.countdown.text = 3;
+          Ball.launch(self.ball, data.xVel, data.yVel);
+        }
+      }, 1000);
     });
+
     this.websocket.on('pong-set-player', function (data) {
       if (data === 'left') {
         self.player.left = true;
@@ -106,6 +126,15 @@ class PongGame extends React.Component {
         self.player.right = true;
       } else {
         self.player.spectator = true;
+      }
+    });
+
+    this.websocket.on('pong-update-input', function (data) {
+      const { velocity, player } = data;
+      if (player === 'left') {
+        self.paddleLeft.body.setVelocity(0, velocity);
+      } else if (player === 'right') {
+        self.paddleRight.body.setVelocity(0, velocity);
       }
     });
   }
@@ -116,12 +145,17 @@ class PongGame extends React.Component {
   }
 
   update() {
-    // TODO: Handle paddle multiplayer (one player per paddle)
     if (!this.gameTracker.roundEnded) {
+      let newVel = undefined;
       if (this.player.left) {
-        Paddle.controlPaddle(this.paddleLeft, this.input.y);
+        newVel = Paddle.controlPaddle(this.paddleLeft, this.input.y);
       } else if (this.player.right) {
-        Paddle.controlPaddle(this.paddleRight, this.input.y);
+        newVel = Paddle.controlPaddle(this.paddleRight, this.input.y);
+      }
+      if (newVel !== undefined) {
+        const player = this.player.left ? 'left' : 'right';
+        // TODO handle rooms
+        this.websocket.emit('pong-update-input', { velocity: newVel, player });
       }
     }
 

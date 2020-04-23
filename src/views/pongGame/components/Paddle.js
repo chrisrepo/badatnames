@@ -8,6 +8,7 @@ export function createPaddle(scene, x, y) {
 
 export function controlPaddle(paddle, y) {
   const diff = paddle.y - y + paddle.height / 2;
+  const curVel = paddle.body.velocity.y;
   if (diff > paddle.height / 2 + 5) {
     paddle.body.setVelocity(0, -PADDLE_VELOCITY);
   } else if (diff < paddle.height / 2 - 5) {
@@ -15,4 +16,17 @@ export function controlPaddle(paddle, y) {
   } else {
     paddle.body.setVelocity(0, 0);
   }
+  const newVel = paddle.body.velocity.y;
+  const shouldUpdate = newVel !== curVel && !bodyBlocked(paddle, newVel);
+  return shouldUpdate ? newVel : undefined;
+}
+
+function bodyBlocked(paddle, y) {
+  if (
+    (paddle.body.blocked.down && y > 0) ||
+    (paddle.body.blocked.up && y < 0)
+  ) {
+    return true;
+  }
+  return false;
 }

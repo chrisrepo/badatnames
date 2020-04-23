@@ -6,10 +6,8 @@ export function createBall(scene, x, y) {
   return ball;
 }
 
-export function launch(ball) {
-  setTimeout(function () {
-    ball.body.setVelocity(-BALL_VELOCITY, BALL_VELOCITY);
-  }, 3000);
+export function launch(ball, xVel, yVel) {
+  ball.body.setVelocity(xVel, yVel);
 }
 
 export function reset(ball, x, y) {

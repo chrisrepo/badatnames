@@ -69,12 +69,22 @@ function create() {
         console.log('LAUNCHING BALL - SERVER');
         // Emit launch ball
         // TODO: Eventually add the dynamic room stuff here so we only emit to the specified room
-        io.emit('pong-launch-ball');
+        const xVel =
+          Math.floor(Math.random() * 2) === 0 ? -BALL_VELOCITY : BALL_VELOCITY;
+        const yVel =
+          Math.floor(Math.random() * 2) === 0 ? -BALL_VELOCITY : BALL_VELOCITY;
+        io.emit('pong-launch-ball', { xVel, yVel });
         self.gameTracker.roundEnded = false;
         self.gameTracker.rightReady = false;
         self.gameTracker.leftReady = false;
-        launch(self.ball);
+        launch(self.ball, xVel, yVel);
       }
+    });
+
+    socket.on('pong-update-input', function (data) {
+      // send out to all clients
+      socket.broadcast.emit('pong-update-input', data);
+      handlePlayerInput(self, data);
     });
 
     socket.on('disconnect', function () {
@@ -93,17 +103,18 @@ function create() {
   });
 }
 
-function update() {
-  // TODO: Handle paddle multiplayer (one player per paddle)
-  if (!this.gameTracker.roundEnded) {
-    controlPaddle(this.paddleLeft, this.input.y);
+function handlePlayerInput(self, data) {
+  const { velocity, player } = data;
+  if (player === 'left') {
+    controlPaddle(self.paddleLeft, velocity);
+  } else if (player === 'right') {
+    controlPaddle(self.paddleRight, velocity);
   }
+}
 
+function update() {
   const blocked = this.ball.body.blocked;
   if ((blocked.left || blocked.right) && !this.gameTracker.roundEnded) {
-    // Stop ball & paddles
-    pointScored(this);
-    resetBall(this.ball, GAME_WIDTH / 2, GAME_HEIGHT / 2);
     // Set score Send events
     // TODO: Eventually add the dynamic room stuff here so we only emit to the specified room
     if (blocked.left) {
@@ -111,9 +122,11 @@ function update() {
     } else {
       this.gameTracker.score.left++;
     }
-    console.log('updating score');
     io.emit('pong-update-score', this.gameTracker.score);
     this.socket.emit('pong-end-round');
+    // Stop ball & paddles
+    pointScored(this);
+    resetBall(this.ball, GAME_WIDTH / 2, GAME_HEIGHT / 2);
   }
 }
 
@@ -145,15 +158,8 @@ function createPaddle(scene, x, y) {
   return paddle;
 }
 
-function controlPaddle(paddle, y) {
-  const diff = paddle.y - y + paddle.height / 2;
-  if (diff > paddle.height / 2 + 5) {
-    paddle.body.setVelocity(0, -PADDLE_VELOCITY);
-  } else if (diff < paddle.height / 2 - 5) {
-    paddle.body.setVelocity(0, PADDLE_VELOCITY);
-  } else {
-    paddle.body.setVelocity(0, 0);
-  }
+function controlPaddle(paddle, yVelocity) {
+  paddle.body.setVelocity(0, yVelocity);
 }
 function createBall(scene, x, y) {
   const ball = scene.physics.add.sprite(x, y, 'ball');
@@ -167,9 +173,9 @@ function resetBall(ball, x, y) {
   ball.setY(y);
 }
 
-function launch(ball) {
+function launch(ball, xVel, yVel) {
   setTimeout(function () {
-    ball.body.setVelocity(-BALL_VELOCITY, BALL_VELOCITY);
+    ball.body.setVelocity(xVel, yVel);
   }, 3000);
 }
 

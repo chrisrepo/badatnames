@@ -28,12 +28,12 @@ class PongUI extends React.Component {
     // TODO: lobby list not harcode
     return (
       <Fragment>
-        <div className="pongPlayerCard">
+        <div className="pongPlayerCard host">
+          <span className="host">HOST</span>
           <Card border="info" style={{ width: '120px' }}>
             <Card.Img variant="top" src={player1} />
             <Card.Body>
               <Card.Title>PLAYER 1</Card.Title>
-              <Card.Text>HOST</Card.Text>
             </Card.Body>
           </Card>
         </div>
