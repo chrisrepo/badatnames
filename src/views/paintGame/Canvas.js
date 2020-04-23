@@ -14,8 +14,8 @@ class Canvas extends Component {
   }
 
   componentDidMount() {
-    this.canvas.width = 1000;
-    this.canvas.height = 800;
+    this.canvas.width = 800;
+    this.canvas.height = 600;
     this.ctx = this.canvas.getContext('2d');
     this.ctx.lineJoin = 'round';
     this.ctx.lineCap = 'round';
@@ -36,7 +36,6 @@ class Canvas extends Component {
   }
 
   initializeWebsocketPaintListener() {
-    window.console.log('initialize paint');
     this.props.connection.websocket.on('emit-paint', (data) => {
       const { userId, line, color } = data;
       if (userId !== this.props.user.userId) {
@@ -45,8 +44,7 @@ class Canvas extends Component {
         });
       }
     });
-    this.props.connection.websocket.on('emit-clear-canvas', (data) => {
-      window.console.log('clear canvas recieevetd');
+    this.props.connection.websocket.on('emit-clear-canvas', () => {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     });
   }

@@ -130,11 +130,16 @@ io.on('connection', (socket) => {
             lobbyList[rooms[i]].host = newHost;
             io.to(newHost).emit('host-migration');
           }
-          // Emit to room that it's left
-          lobbyList[rooms[i]].clientList = newClientList;
-          const lobby = Object.assign({}, lobbyList[rooms[i]]);
-          // TODO: Make it a new emit for leaving lobby, or change to emit-update-lobby
-          socket.to(rooms[i]).emit('emit-join-lobby', { lobby });
+          if (Object.keys(newClientList).length === 0) {
+            // Close room
+            delete lobbyList[rooms[i]];
+          } else {
+            // Emit to room that it's left
+            lobbyList[rooms[i]].clientList = newClientList;
+            const lobby = Object.assign({}, lobbyList[rooms[i]]);
+            // TODO: Make it a new emit for leaving lobby, or change to emit-update-lobby
+            socket.to(rooms[i]).emit('emit-join-lobby', { lobby });
+          }
         }
       }
     }
