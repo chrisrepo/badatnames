@@ -3,7 +3,8 @@
   align-items: flex-start;
   padding: 5px 15px;
   border-radius: 8px;
-  background-color: #c0c8d1;
+  background-color: #eaeaea;
+  box-shadow: 0px 2px 5px #9a9a9a;
 }
 
 .color-container {

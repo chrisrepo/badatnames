@@ -5,13 +5,23 @@ import SocketConnection from '../../common/websocket/SocketConnection';
 class UserList extends React.Component {
   render() {
     return (
-      <div>
+      <div id="user-list-container">
         <SocketConnection lobby={true} />
-        <h3>Lobby Id: {this.props.lobby.lobbyId}</h3>
-        {Object.keys(this.props.lobby.clientList).map((key, index) => {
-          const client = this.props.lobby.clientList[key];
-          return <div key={index}>{client.username}</div>;
-        })}
+        <div id="lobby-id-container">
+          <div id="lobby-id">
+            <span id="lobby-id-name">Paint-</span>
+            <span id="lobby-id-value">{this.props.lobby.lobbyId}</span>
+          </div>
+        </div>
+        <div id="round-container">
+          <div id="round-counter">Round {this.props.paint.round} of X</div>
+        </div>
+        <div id="user-container">
+          {Object.keys(this.props.lobby.clientList).map((key, index) => {
+            const client = this.props.lobby.clientList[key];
+            return <div key={index}>{client.username}</div>;
+          })}
+        </div>
       </div>
     );
   }
@@ -20,5 +30,6 @@ class UserList extends React.Component {
 const mapStateToProps = (state) => ({
   connection: state.connection,
   lobby: state.lobby,
+  paint: state.paintGame,
 });
 export default connect(mapStateToProps, { setLobby })(UserList);

@@ -58,7 +58,7 @@ class App extends Component {
   }
 
   renderPage() {
-    window.console.log(this.state.ws, this.state.isConnecting);
+    // Guarantee we've connected to websocket before loading app
     if (!this.state.isConnecting) {
       return (
         <Router history={history}>

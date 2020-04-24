@@ -6,6 +6,12 @@ export const PAINT_ACTIONS = {
   SET_COLOR: `${actionPrefix}SET_COLOR`,
   SET_HEX_COLOR: `${actionPrefix}SET_HEX_COLOR`,
   SET_BRUSH_SIZE: `${actionPrefix}SET_BRUSH_SIZE`,
+  SET_DRAWING_WORD: `${actionPrefix}SET_DRAWING_WORD`,
+  SET_GUESSING_WORD: `${actionPrefix}SET_GUESSING_WORD`,
+  SET_CURRENT_DRAWER: `${actionPrefix}SET_CURRENT_DRAWER`,
+  SET_SUB_ROUND_STARTED: `${actionPrefix}SET_SUB_ROUND_STARTED`,
+  END_CURRENT_SUB_ROUND: `${actionPrefix}SET_SUB_ROUND_STARTED`,
+  SET_ROUND: `${actionPrefix}SET_ROUND`,
 };
 
 // Action Functions
@@ -24,4 +30,33 @@ export const setHexColor = (hexColor) => ({
 export const setBrushSize = (size) => ({
   type: PAINT_ACTIONS.SET_BRUSH_SIZE,
   payload: size,
+});
+
+export const setDrawingWord = (drawingWord) => ({
+  type: PAINT_ACTIONS.SET_DRAWING_WORD,
+  payload: drawingWord,
+});
+
+export const setGuessingWord = (guessingWord) => ({
+  type: PAINT_ACTIONS.SET_GUESSING_WORD,
+  payload: guessingWord,
+});
+
+export const setCurrentDrawer = (isCurrentDrawer) => ({
+  type: PAINT_ACTIONS.SET_CURRENT_DRAWER,
+  payload: isCurrentDrawer,
+});
+
+export const setSubRoundStarted = (started) => ({
+  type: PAINT_ACTIONS.SET_SUB_ROUND_STARTED,
+  payload: started,
+});
+
+export const endCurrentSubRound = () => ({
+  type: PAINT_ACTIONS.END_CURRENT_SUB_ROUND,
+});
+
+export const setRound = (roundNo) => ({
+  type: PAINT_ACTIONS.SET_SUB_ROUND_STARTED,
+  payload: roundNo,
 });

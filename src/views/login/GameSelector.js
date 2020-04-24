@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import Carousel from 'react-bootstrap/Carousel';
 
 import './GameSelector.css';
-import GameOption from './GameOption';
 import { gamesMap, gamesDescription } from '../../constants';
 import { selectGame } from '../../redux/actions';
 

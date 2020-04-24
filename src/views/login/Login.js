@@ -95,6 +95,9 @@ class Login extends React.Component {
     this.setState({
       error: undefined,
     });
+    this.props.setUser({
+      username: this.state.username,
+    });
     this.props.connection.websocket.emit(`${type}-lobby`, body);
   };
 
