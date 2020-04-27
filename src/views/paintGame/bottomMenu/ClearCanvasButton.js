@@ -12,7 +12,7 @@ class ClearCanvasButton extends React.Component {
 
   render() {
     // TODO: only show when the user is the drawer
-    if (this.props.websocket.id === this.props.lobby.host) {
+    if (this.props.paint.isCurrentDrawer) {
       return (
         <button className="btn btn-info" onClick={this.clearCanvasClicked}>
           Clear Canvas
@@ -27,5 +27,6 @@ const mapStateToProps = (state) => ({
   websocket: state.connection.websocket,
   user: state.user,
   lobby: state.lobby,
+  paint: state.paintGame,
 });
 export default connect(mapStateToProps, {})(ClearCanvasButton);

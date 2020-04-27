@@ -9,6 +9,7 @@ const initialState = {
   guessingWord: '',
   subRoundStarted: false, // True once user has picked a word to draw, false once draw timer ends
   round: 1,
+  isTimerRunning: false,
 };
 
 export const paintReducer = (state = initialState, action) => {
@@ -51,6 +52,11 @@ export const paintReducer = (state = initialState, action) => {
     case PAINT_ACTIONS.SET_ROUND: {
       return Object.assign({}, state, {
         round: action.payload,
+      });
+    }
+    case PAINT_ACTIONS.SET_TIMER: {
+      return Object.assign({}, state, {
+        isTimerRunning: action.payload,
       });
     }
     case PAINT_ACTIONS.END_CURRENT_SUB_ROUND: {

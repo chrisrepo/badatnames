@@ -10,8 +10,9 @@ export const PAINT_ACTIONS = {
   SET_GUESSING_WORD: `${actionPrefix}SET_GUESSING_WORD`,
   SET_CURRENT_DRAWER: `${actionPrefix}SET_CURRENT_DRAWER`,
   SET_SUB_ROUND_STARTED: `${actionPrefix}SET_SUB_ROUND_STARTED`,
-  END_CURRENT_SUB_ROUND: `${actionPrefix}SET_SUB_ROUND_STARTED`,
+  END_CURRENT_SUB_ROUND: `${actionPrefix}END_CURRENT_SUB_ROUND`,
   SET_ROUND: `${actionPrefix}SET_ROUND`,
+  SET_TIMER: `${actionPrefix}SET_TIMER`,
 };
 
 // Action Functions
@@ -57,6 +58,11 @@ export const endCurrentSubRound = () => ({
 });
 
 export const setRound = (roundNo) => ({
-  type: PAINT_ACTIONS.SET_SUB_ROUND_STARTED,
+  type: PAINT_ACTIONS.SET_ROUND,
   payload: roundNo,
+});
+
+export const setTimer = (toggle) => ({
+  type: PAINT_ACTIONS.SET_TIMER,
+  payload: toggle,
 });

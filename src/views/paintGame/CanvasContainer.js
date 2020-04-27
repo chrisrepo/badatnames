@@ -10,6 +10,7 @@ import {
   setCurrentDrawer,
   setSubRoundStarted,
   setRound,
+  setTimer,
 } from '../../redux/actions';
 
 class CanvasContainer extends Component {
@@ -39,7 +40,6 @@ class CanvasContainer extends Component {
     this.props.connection.websocket.on(
       'emit-paint-update-guess-word',
       (data) => {
-        window.console.log('update guessing word', data);
         this.props.setGuessingWord(data.word);
       }
     );
@@ -47,10 +47,12 @@ class CanvasContainer extends Component {
       window.console.log('paint start game', data);
       this.props.setRound(data.round);
     });
+    this.props.connection.websocket.on('emit-paint-start-timer', () => {
+      this.props.setTimer(true);
+    });
   }
 
   onWordOptionSelection = (word, index) => {
-    window.console.log('word selected', word);
     this.setState({
       showPreGuessModal: false,
       preGuessOptions: [],
@@ -93,4 +95,5 @@ export default connect(mapStateToProps, {
   setCurrentDrawer,
   setSubRoundStarted,
   setRound,
+  setTimer,
 })(CanvasContainer);

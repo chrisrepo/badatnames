@@ -9,7 +9,12 @@ import { setLobby } from '../../redux/actions';
 import { gamesMap } from '../../constants';
 import UserList from '../../common/users/UserList';
 import SocketConnection from '../../common/websocket/SocketConnection';
+import PaintLobbyOptions from './PaintLobbyOptions';
 class LobbyView extends React.Component {
+  state = {
+    gameSpecificOptions: {},
+  };
+
   componentDidMount() {
     this.props.connection.websocket.on('emit-start-game', () => {
       const route = gamesMap[this.props.gameSelector.selectedGame];
@@ -21,11 +26,14 @@ class LobbyView extends React.Component {
     const body = {
       lobbyId: this.props.lobby.lobbyId,
       gameType: this.props.gameSelector.selectedGame,
+      gameOptions: this.state.gameSpecificOptions,
     };
     this.props.connection.websocket.emit('on-start-game', body);
   };
 
-  renderUserListGroup;
+  setGameSpecificOptions = (options) => {
+    this.setState({ gameSpecificOptions: options });
+  };
 
   render() {
     const gameType = this.props.gameSelector.selectedGame;
@@ -36,6 +44,9 @@ class LobbyView extends React.Component {
         <SocketConnection lobby={true}></SocketConnection>
         <h4>Lobby Code: {gameType + '-' + this.props.lobby.lobbyId}</h4>
         <UserList lobby={this.props.lobby} />
+        {gameType === 'Paint' && showHostStartButton && (
+          <PaintLobbyOptions setOptions={this.setGameSpecificOptions} />
+        )}
         {showHostStartButton && (
           <button className="btn btn-primary" onClick={this.startButtonClicked}>
             Start

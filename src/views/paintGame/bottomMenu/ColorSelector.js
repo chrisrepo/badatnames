@@ -38,7 +38,6 @@ class ColorSelector extends React.Component {
   render() {
     return (
       <div className="color-container">
-        <div className="color-header">Palette</div>
         <div className="color-button-container">{this.getColorList()}</div>
         {<HexColorSelector />}
       </div>

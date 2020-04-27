@@ -6,6 +6,7 @@ import {
   endCurrentSubRound,
   setRound,
   setCurrentDrawer,
+  setTimer,
 } from '../../../redux/actions';
 import './ChatBox.css';
 class ChatBox extends React.Component {
@@ -29,6 +30,7 @@ class ChatBox extends React.Component {
       this.props.endCurrentSubRound();
       this.props.setRound(data.round);
       this.props.setCurrentDrawer(false);
+      this.props.setTimer(false);
     });
 
     this.props.websocket.on('emit-paint-guess-chat', (data) => {
@@ -69,6 +71,17 @@ class ChatBox extends React.Component {
       };
       this.setState({ chat: [...this.state.chat, chatObj] });
     });
+
+    this.props.websocket.on('emit-paint-guess-close', (data) => {
+      const { socketId, userId } = data;
+      // Post in chat with the user id
+      const chatObj = {
+        type: 'close',
+        userId,
+        text: ' is close!',
+      };
+      this.setState({ chat: [...this.state.chat, chatObj] });
+    });
   }
   guessTextOnChange = (e) => {
     this.setState({ guessText: e.target.value });
@@ -100,6 +113,10 @@ class ChatBox extends React.Component {
             }
             case 'correct': {
               classVal += ' text-success';
+              break;
+            }
+            case 'close': {
+              classVal += ' text-warning';
               break;
             }
             default: {
@@ -156,4 +173,5 @@ export default connect(mapStateToProps, {
   endCurrentSubRound,
   setRound,
   setCurrentDrawer,
+  setTimer,
 })(ChatBox);
