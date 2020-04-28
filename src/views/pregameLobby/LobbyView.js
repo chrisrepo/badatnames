@@ -36,9 +36,11 @@ class LobbyView extends React.Component {
   };
 
   render() {
+    const canStart = Object.keys(this.props.lobby.clientList).length > 1;
     const gameType = this.props.gameSelector.selectedGame;
     const showHostStartButton =
       this.props.lobby.host === this.props.connection.websocket.id;
+    const buttonColor = canStart ? 'btn-primary' : 'btn-secondary';
     return (
       <Container className="lobbyViewContainer">
         <SocketConnection lobby={true}></SocketConnection>
@@ -48,7 +50,11 @@ class LobbyView extends React.Component {
           <PaintLobbyOptions setOptions={this.setGameSpecificOptions} />
         )}
         {showHostStartButton && (
-          <button className="btn btn-primary" onClick={this.startButtonClicked}>
+          <button
+            disabled={!canStart}
+            className={`btn ${buttonColor}`}
+            onClick={this.startButtonClicked}
+          >
             Start
           </button>
         )}

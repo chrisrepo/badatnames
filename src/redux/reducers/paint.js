@@ -14,6 +14,8 @@ const initialState = {
   score: [],
   roundScore: [],
   gameOver: false,
+  maxTime: 90,
+  maxRounds: 3,
 };
 
 export const paintReducer = (state = initialState, action) => {
@@ -77,6 +79,12 @@ export const paintReducer = (state = initialState, action) => {
         score: action.payload.score,
         roundScore: action.payload.roundScore,
         gameOver: action.payload.isGameOver,
+      });
+    }
+    case PAINT_ACTIONS.SET_HOST_OPTIONS: {
+      return Object.assign({}, state, {
+        maxTime: action.payload.maxTime,
+        maxRounds: action.payload.maxRounds,
       });
     }
     default: {

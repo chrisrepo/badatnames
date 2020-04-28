@@ -47,6 +47,7 @@ module.exports = function (io, socket, lobbyList, clientList) {
   socket.on('on-start-game', (data) => {
     const roomId = data.gameType + '-' + data.lobbyId;
     lobbyList[roomId].started = true;
+    lobbyList[roomId].gameOptions = data.gameOptions || {};
     io.to(roomId).emit('emit-start-game', { ballLaunch: true });
   });
 };

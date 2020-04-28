@@ -10,9 +10,7 @@ const WordToGuess = (props) => {
   return (
     <div className="word-to-guess-wrapper">
       <div className="word-to-guess">
-        {
-          props.paint.subRoundStarted && <Timer maxTime={90} /> // TODO: Don't hardcode max time in round
-        }
+        {props.paint.isTimerRunning && <Timer maxTime={props.paint.maxTime} />}
         <div className="word-to-guess-header">{header}</div>
         <div className="word-to-guess-text">{displayWord}</div>
       </div>

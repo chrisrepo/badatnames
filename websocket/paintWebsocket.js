@@ -7,7 +7,6 @@ const {
   createScoreObject,
   createEndGameScoreObject,
 } = require('./paintGameUtils');
-const maxRounds = 2; // TODO: don't hardcode, accept value from host
 
 // Takes clientList map (socket id's are key) & returns the next socket id to
 function getNextDrawer(lobby, currentId) {
@@ -18,7 +17,7 @@ function getNextDrawer(lobby, currentId) {
     }
     if (currentId === clientArray[i]) {
       if (i === clientArray.length - 1) {
-        if (maxRounds === lobby.game.round) {
+        if (lobby.game.maxRounds === lobby.game.round) {
           //END GAME
           return undefined;
         } else {
@@ -106,6 +105,8 @@ function endSubRound(io, lobby, roomId) {
   const nextDrawer = getNextDrawer(lobby, lobby.game.currentDrawer);
   const gameScore = createEndGameScoreObject(lobby);
   const roundScore = createScoreObject(lobby);
+  // clear canvas
+  io.in(roomId).emit('emit-clear-canvas');
   if (nextDrawer === undefined) {
     io.in(roomId).emit('emit-paint-end-game', {
       score: gameScore,
@@ -125,8 +126,6 @@ function endSubRound(io, lobby, roomId) {
     lobby.game.currentWord = null;
     lobby.game.correctAnswers = {};
     lobby.game.roundScore = {};
-    // clear canvas
-    io.in(roomId).emit('emit-clear-canvas');
     setTimeout(() => {
       // start pre guess
       startPreGuess(io, lobby);
@@ -187,7 +186,9 @@ function startGame(io, socket, lobby, roomId) {
     currentWord: null,
     correctAnswers: {}, // Tracks users who have answered correctly
     hasBegun: true,
-    maxTime: 15,
+    // TODO: config for default game options
+    maxTime: lobby.gameOptions.maxTime,
+    maxRounds: lobby.gameOptions.rounds,
     scores: {}, // key: socket id value: score for the user
     roundScore: {}, // same as above but gets cleared each round & added to 'scores' as total
   };
@@ -196,6 +197,8 @@ function startGame(io, socket, lobby, roomId) {
   io.in(roomId).emit('paint-start-game', {
     currentDrawer: game.currentDrawer,
     round: game.round,
+    maxTime: game.maxTime,
+    maxRounds: game.maxRounds,
   });
   // start pre guess
   startPreGuess(io, lobby, roomId);

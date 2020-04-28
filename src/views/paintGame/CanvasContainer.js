@@ -13,6 +13,7 @@ import {
   setRound,
   setTimer,
   showScore,
+  setHostOptions,
 } from '../../redux/actions';
 
 class CanvasContainer extends Component {
@@ -76,6 +77,10 @@ class CanvasContainer extends Component {
     this.props.connection.websocket.on('paint-start-game', (data) => {
       window.console.log('paint start game', data);
       this.props.setRound(data.round);
+      this.props.setHostOptions({
+        maxTime: data.maxTime,
+        maxRounds: data.maxRounds,
+      });
     });
     this.props.connection.websocket.on('emit-paint-start-timer', () => {
       this.props.setTimer(true);
@@ -136,4 +141,5 @@ export default connect(mapStateToProps, {
   setRound,
   setTimer,
   showScore,
+  setHostOptions,
 })(CanvasContainer);

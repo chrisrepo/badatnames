@@ -14,6 +14,7 @@ export const PAINT_ACTIONS = {
   SET_ROUND: `${actionPrefix}SET_ROUND`,
   SET_TIMER: `${actionPrefix}SET_TIMER`,
   SHOW_SCORE: `${actionPrefix}SHOW_SCORE`,
+  SET_HOST_OPTIONS: `${actionPrefix}SET_HOST_OPTIONS`,
 };
 
 // Action Functions
@@ -76,4 +77,9 @@ export const showScore = ({ show, score, roundScore, isGameOver }) => ({
     roundScore,
     isGameOver,
   },
+});
+
+export const setHostOptions = (options) => ({
+  type: PAINT_ACTIONS.SET_HOST_OPTIONS,
+  payload: options,
 });

@@ -20,15 +20,18 @@ class PaintLobbyOptions extends React.Component {
 
   handleTimeToGuess = (e) => {
     this.setState({ maxTime: e.target.value });
-    this.props.setOptions(this.state);
+    this.props.setOptions({
+      maxTime: parseInt(e.target.value),
+      rounds: parseInt(this.state.rounds),
+    });
   };
 
   handleRound = (e) => {
-    const re = /^[0-9\b]+$/;
-    if (e.target.value === '' || re.test(e.target.value)) {
-      this.setState({ rounds: e.target.value });
-      this.props.setOptions(this.state);
-    }
+    this.setState({ rounds: e.target.value });
+    this.props.setOptions({
+      maxTime: parseInt(this.state.maxTime),
+      rounds: parseInt(e.target.value),
+    });
   };
 
   render() {
@@ -38,7 +41,9 @@ class PaintLobbyOptions extends React.Component {
         <InputGroup>
           <Form.Control
             id="time-to-guess"
-            type="text"
+            type="number"
+            min="10"
+            max="120"
             style={{ maxWidth: '10%' }}
             value={this.state.maxTime}
             onChange={this.handleTimeToGuess}
@@ -50,10 +55,12 @@ class PaintLobbyOptions extends React.Component {
         <Form.Group size="sm">
           <Form.Label>Rounds</Form.Label>
           <Form.Control
-            type="text"
+            type="number"
+            min="1"
+            max="10"
             style={{ maxWidth: '10%' }}
             value={this.state.rounds}
-            onChange={this.handleTimeToGuess}
+            onChange={this.handleRound}
           />
         </Form.Group>
       </Container>

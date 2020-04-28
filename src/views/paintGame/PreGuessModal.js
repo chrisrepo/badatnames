@@ -9,7 +9,7 @@ import Button from 'react-bootstrap/Button';
  */
 const PreGuessModal = ({ show, wordOptions, wordSelected }) => {
   return (
-    <Modal show={show}>
+    <Modal show={show} onHide={() => {}}>
       <Modal.Header closeButton>
         <Modal.Title>Select a word to draw</Modal.Title>
       </Modal.Header>

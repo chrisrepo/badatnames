@@ -14,7 +14,9 @@ class UserList extends React.Component {
           </div>
         </div>
         <div id="round-container">
-          <div id="round-counter">Round {this.props.paint.round} of X</div>
+          <div id="round-counter">
+            Round {this.props.paint.round} of {this.props.paint.maxRounds}
+          </div>
         </div>
         <div id="user-container">
           {Object.keys(this.props.lobby.clientList).map((key, index) => {
