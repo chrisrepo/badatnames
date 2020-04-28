@@ -1,6 +1,13 @@
 const wordArray = require('./paintGameWords');
-const { isGuessClose } = require('./paintGameUtils');
-const maxRounds = 2;
+const {
+  isGuessClose,
+  getGuessScore,
+  getDrawScore,
+  updateScores,
+  createScoreObject,
+  createEndGameScoreObject,
+} = require('./paintGameUtils');
+const maxRounds = 2; // TODO: don't hardcode, accept value from host
 
 // Takes clientList map (socket id's are key) & returns the next socket id to
 function getNextDrawer(lobby, currentId) {
@@ -12,7 +19,8 @@ function getNextDrawer(lobby, currentId) {
     if (currentId === clientArray[i]) {
       if (i === clientArray.length - 1) {
         if (maxRounds === lobby.game.round) {
-          //TODO: END GAME
+          //END GAME
+          return undefined;
         } else {
           lobby.game.round++;
           return clientArray[0];
@@ -86,33 +94,66 @@ function replaceCharAtIndex(str, index, replaceChar) {
 function endSubRound(io, lobby, roomId) {
   // Clear timeouts/intervals
   clearInterval(hintInterval);
+  clearInterval(remainingTimeInterval);
   clearTimeout(guessTimeout);
   //TODO: Show points (just send points out and show small animation on user list (where points are displayed))
-  //TODO: Get points for the drawer (based on how many people guessed it)
-
+  // Get points for the drawer (based on how many people guessed it)
+  const rightGuessAmt = Object.keys(lobby.game.correctAnswers).length;
+  lobby.game.roundScore[lobby.game.currentDrawer] = getDrawScore(rightGuessAmt);
+  // Add points from 'roundScore' to 'score'
+  updateScores(lobby);
   // get next word & drawer
-  lobby.game.currentDrawer = getNextDrawer(lobby, lobby.game.currentDrawer);
-  lobby.game.currentWord = null;
-  lobby.game.correctAnswers = {};
-  // End round (send word for end round display, since only currentDrawer has the word)
-  io.in(roomId).emit('emit-paint-end-sub-round', {
-    word: lobby.game.currentWord,
-    currentDrawer: lobby.game.currentDrawer,
-    round: lobby.game.round,
-  });
-  // clear canvas
-  io.in(roomId).emit('emit-clear-canvas');
-  // start pre guess
-  startPreGuess(io, lobby);
+  const nextDrawer = getNextDrawer(lobby, lobby.game.currentDrawer);
+  const gameScore = createEndGameScoreObject(lobby);
+  const roundScore = createScoreObject(lobby);
+  if (nextDrawer === undefined) {
+    io.in(roomId).emit('emit-paint-end-game', {
+      score: gameScore,
+      roundScore: roundScore,
+    });
+  } else {
+    lobby.game.currentDrawer = nextDrawer;
+    // End round (send word for end round display, since only currentDrawer has the word)
+    io.in(roomId).emit('emit-paint-end-sub-round', {
+      word: lobby.game.currentWord,
+      currentDrawer: lobby.game.currentDrawer,
+      round: lobby.game.round,
+      score: gameScore,
+      roundScore: roundScore,
+    });
+    // Wipe out some round specific variables
+    lobby.game.currentWord = null;
+    lobby.game.correctAnswers = {};
+    lobby.game.roundScore = {};
+    // clear canvas
+    io.in(roomId).emit('emit-clear-canvas');
+    setTimeout(() => {
+      // start pre guess
+      startPreGuess(io, lobby);
+    }, 5000); // TODO: make post/pre round delay a config
+  }
+}
+
+function initiateTimeLeftInterval(roundTime) {
+  remainingTime = roundTime;
+  remainingTimeInterval = setInterval(() => {
+    if (remainingTime === 0) {
+      clearInterval(remainingTimeInterval);
+    }
+    remainingTime--;
+  }, 1000);
 }
 
 let guessTimeout; // Use to watch timeout. If everyone guesses first, we want to clearTimeout()
-function startGuessTimer(io, lobby, roomId, roundTime) {
+let remainingTimeInterval;
+let remainingTime = 0;
+function startGuessTimer(io, lobby, roomId) {
   io.in(roomId).emit('emit-paint-start-timer');
-  initiateHintInterval(io, lobby, roomId, roundTime);
+  initiateHintInterval(io, lobby, roomId, lobby.game.maxTime);
+  initiateTimeLeftInterval(lobby.game.maxTime);
   guessTimeout = setTimeout(() => {
     endSubRound(io, lobby, roomId);
-  }, roundTime * 1000);
+  }, lobby.game.maxTime * 1000);
 }
 
 function shuffleWordOptions(wordsToUse) {
@@ -146,7 +187,9 @@ function startGame(io, socket, lobby, roomId) {
     currentWord: null,
     correctAnswers: {}, // Tracks users who have answered correctly
     hasBegun: true,
+    maxTime: 15,
     scores: {}, // key: socket id value: score for the user
+    roundScore: {}, // same as above but gets cleared each round & added to 'scores' as total
   };
   lobby.game = game;
   // emit current drawer to all in lobby (so they can show the card of that user)
@@ -211,7 +254,7 @@ module.exports = function (io, socket, lobbyList) {
     lobbyList[roomId].game.guessWord = blankWord;
     // Word picked: emit word to guess & start round
     io.in(roomId).emit('emit-paint-word-picked', { word: blankWord });
-    startGuessTimer(io, lobbyList[roomId], roomId, 15); // TODO: Don't hardcode round timer
+    startGuessTimer(io, lobbyList[roomId], roomId);
   });
 
   socket.on('on-paint', (data) => {
@@ -228,7 +271,12 @@ module.exports = function (io, socket, lobbyList) {
       io.in(roomId).emit('emit-paint-answer-chat', { word, userId });
     } else if (word.toLowerCase() === lobby.game.currentWord) {
       // User has guessed word: Add to correctAnswers
-      lobby.game.correctAnswers[socket.id] = true; // TODO: maybe place timestamp of guess in the object for scoring
+      lobby.game.correctAnswers[socket.id] = true;
+      lobby.game.roundScore[socket.id] = getGuessScore(
+        remainingTime,
+        lobby.game.maxTime,
+        Object.keys(lobby.clientList).length
+      );
       // Tell everyone this socket got it right (emit user id for putting in chat)
       io.in(roomId).emit('emit-paint-guess-correct', {
         userId,

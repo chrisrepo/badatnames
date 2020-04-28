@@ -13,6 +13,7 @@ export const PAINT_ACTIONS = {
   END_CURRENT_SUB_ROUND: `${actionPrefix}END_CURRENT_SUB_ROUND`,
   SET_ROUND: `${actionPrefix}SET_ROUND`,
   SET_TIMER: `${actionPrefix}SET_TIMER`,
+  SHOW_SCORE: `${actionPrefix}SHOW_SCORE`,
 };
 
 // Action Functions
@@ -65,4 +66,14 @@ export const setRound = (roundNo) => ({
 export const setTimer = (toggle) => ({
   type: PAINT_ACTIONS.SET_TIMER,
   payload: toggle,
+});
+
+export const showScore = ({ show, score, roundScore, isGameOver }) => ({
+  type: PAINT_ACTIONS.SHOW_SCORE,
+  payload: {
+    show,
+    score,
+    roundScore,
+    isGameOver,
+  },
 });

@@ -33,6 +33,13 @@ class ChatBox extends React.Component {
       this.props.setTimer(false);
     });
 
+    this.props.websocket.on('emit-paint-end-game', () => {
+      this.setState({ chat: [], guessedCorrect: false, guessText: '' });
+      this.props.endCurrentSubRound();
+      this.props.setCurrentDrawer(false);
+      this.props.setTimer(false);
+    });
+
     this.props.websocket.on('emit-paint-guess-chat', (data) => {
       const { word, userId } = data;
       // Post in chat with the user id
@@ -95,7 +102,6 @@ class ChatBox extends React.Component {
         word: this.state.guessText,
       };
       // Emit guess then clear input
-      window.console.log('submit guess: ', this.state.guessText);
       this.props.websocket.emit('paint-guess-word', body);
       this.setState({ guessText: '' });
     }

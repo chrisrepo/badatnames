@@ -1,0 +1,89 @@
+.score-display-container {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  width: 800px;
+  height: 600px; /*TODO: magic numbers? */
+}
+
+.score-display-container.show {
+  display: flex;
+}
+
+.score-display-header {
+  font-weight: bold;
+  font-size: 2em;
+}
+.sub-round-score {
+  margin-top: 0.75em;
+  font-size: 1.2em;
+}
+
+.end-game-score {
+  margin-top: 0.75em;
+  font-size: 1.2em;
+}
+
+.sub-round-score .score {
+  margin-left: 0.5em;
+  font-weight: bold;
+}
+
+.sub-round-score .user {
+  font-weight: 500;
+}
+
+.end-game-score .user {
+  font-weight: bold;
+}
+
+.end-game-score .rank {
+  font-weight: bold;
+  font-size: 1.2em;
+  margin-right: 0.3em;
+}
+
+.end-game-score .score {
+  margin-left: 0.5em;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
+.end-game-score.first-place .user {
+  color: #d4af37;
+}
+
+.end-game-score.first-place .rank {
+  color: #d4af37;
+}
+
+.end-game-score.second-place .user {
+  color: #adadad;
+}
+
+.end-game-score.second-place .rank {
+  color: #adadad;
+}
+
+.end-game-score.third-place .user {
+  color: #b08d57;
+}
+
+.end-game-score.third-place .rank {
+  color: #b08d57;
+}
+
+.end-game-score.no-place .user {
+  color: #adc0b9;
+}
+
+.end-game-score.no-place .rank {
+  color: #adc0b9;
+}
+
+.scoretest1 {
+  display: flex;
+  flex-direction: column;
+}

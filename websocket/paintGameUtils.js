@@ -1,19 +1,3 @@
-module.exports = {
-  isGuessClose(guess, correctWord) {
-    if (
-      guess.length - 1 > correctWord.length ||
-      correctWord.length - 1 > guess.length
-    ) {
-      // Greater than 1 letter difference, cannot be close
-      return false;
-    }
-    const missingResult = closeHelper(guess, correctWord, 'missing');
-    const swapResult = closeHelper(guess, correctWord, 'swap');
-    const addedResult = closeHelper(guess, correctWord, 'added');
-    return swapResult || addedResult || missingResult;
-  },
-};
-
 // Helper function that does different checks based on
 function closeHelper(guess, correct, type) {
   switch (type) {
@@ -93,3 +77,56 @@ function closeHelper(guess, correct, type) {
     }
   }
 }
+
+// Constant values to hold base modifiers for points (easier tweaking)
+const GUESS_SCORE_MOD = 100;
+const DRAW_SCORE_MOD = 50;
+module.exports = {
+  isGuessClose(guess, correctWord) {
+    if (
+      guess.length - 1 > correctWord.length ||
+      correctWord.length - 1 > guess.length
+    ) {
+      // Greater than 1 letter difference, cannot be close
+      return false;
+    }
+    const missingResult = closeHelper(guess, correctWord, 'missing');
+    const swapResult = closeHelper(guess, correctWord, 'swap');
+    const addedResult = closeHelper(guess, correctWord, 'added');
+    return swapResult || addedResult || missingResult;
+  },
+  getGuessScore(remainingTime, maxTime, totalPlayers) {
+    const maxPoints = totalPlayers * GUESS_SCORE_MOD;
+    return maxPoints * (remainingTime / maxTime);
+  },
+  getDrawScore(rightGuesses) {
+    return DRAW_SCORE_MOD * rightGuesses;
+  },
+  updateScores(lobby) {
+    Object.keys(lobby.clientList).forEach((key) => {
+      let gameScore = lobby.game.scores[key] || 0;
+      let roundScore = lobby.game.roundScore[key] || 0;
+      lobby.game.scores[key] = gameScore + roundScore;
+    });
+  },
+  createScoreObject(lobby) {
+    const output = [];
+    Object.keys(lobby.clientList).forEach((key) => {
+      const user = lobby.clientList[key].username;
+      const score = lobby.game.roundScore[key] || 0;
+      output.push({ user, score: Math.ceil(score) });
+    });
+    //TODO: sort by most to least
+    return output;
+  },
+  createEndGameScoreObject(lobby) {
+    const output = [];
+    Object.keys(lobby.clientList).forEach((key) => {
+      const user = lobby.clientList[key].username;
+      const score = lobby.game.scores[key] || 0;
+      output.push({ user, score: Math.ceil(score) });
+    });
+    //TODO: sort by most to least
+    return output;
+  },
+};

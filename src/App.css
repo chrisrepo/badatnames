@@ -9,16 +9,3 @@
 h5 {
   margin-bottom: 10px;
 }
-.user {
-  padding: 7px 15px;
-  border-radius: 4px;
-  color: white;
-  font-size: 13px;
-  font-weight: bold;
-  background: #ee92c2;
-  margin: 10px 0;
-}
-.guest {
-  background: #f0c987;
-  color: white;
-}

@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import PaintCursor from './PaintCursor';
 import PreGuessModal from './PreGuessModal';
 import Canvas from './Canvas';
+import ScoreDisplay from './ScoreDisplay';
 import { canvasContainerRef } from '../../constants';
 import {
   setDrawingWord,
@@ -11,6 +12,7 @@ import {
   setSubRoundStarted,
   setRound,
   setTimer,
+  showScore,
 } from '../../redux/actions';
 
 class CanvasContainer extends Component {
@@ -19,12 +21,34 @@ class CanvasContainer extends Component {
     this.state = {
       showPreGuessModal: false,
       preGuessOptions: [],
+      displayWord: '',
     };
   }
 
   componentDidMount() {
     this.props.connection.websocket.emit('paint-entered-game', {
       lobbyId: this.props.lobby.lobbyId,
+    });
+
+    this.props.connection.websocket.on('emit-paint-end-game', (data) => {
+      this.props.showScore({
+        show: true,
+        score: data.score,
+        roundScore: data.roundScore,
+        isGameOver: true,
+      });
+    });
+
+    this.props.connection.websocket.on('emit-paint-end-sub-round', (data) => {
+      this.setState({
+        displayWord: data.word,
+      });
+      this.props.showScore({
+        show: true,
+        score: data.score,
+        roundScore: data.roundScore,
+        isGameOver: false,
+      });
     });
     this.props.connection.websocket.on('paint-pre-guess', (data) => {
       this.setState({
@@ -33,6 +57,12 @@ class CanvasContainer extends Component {
       });
     });
     this.props.connection.websocket.on('emit-paint-word-picked', (data) => {
+      this.props.showScore({
+        show: false,
+        score: this.props.paint.score,
+        roundScore: this.props.paint.roundScore,
+        isGameOver: false,
+      });
       // Should be an empty word (replaced by underscores);
       this.props.setGuessingWord(data.word);
       this.props.setSubRoundStarted(true);
@@ -67,6 +97,9 @@ class CanvasContainer extends Component {
   };
 
   render() {
+    const scoreToShow = this.props.paint.gameOver
+      ? this.props.paint.score
+      : this.props.paint.roundScore;
     return (
       <Fragment>
         <PreGuessModal
@@ -76,6 +109,12 @@ class CanvasContainer extends Component {
         />
         <div id={canvasContainerRef} style={{ cursor: 'none' }}>
           <PaintCursor containerRef={canvasContainerRef} />
+          <ScoreDisplay
+            word={this.state.displayWord}
+            scores={scoreToShow}
+            show={this.props.paint.showScore}
+            isEndGame={this.props.paint.gameOver}
+          />
           <Canvas isCurrentDrawer={this.props.paint.isCurrentDrawer} />
         </div>
       </Fragment>
@@ -96,4 +135,5 @@ export default connect(mapStateToProps, {
   setSubRoundStarted,
   setRound,
   setTimer,
+  showScore,
 })(CanvasContainer);

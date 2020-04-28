@@ -11,7 +11,7 @@ class Canvas extends Component {
   }
 
   componentDidMount() {
-    this.canvas.width = 800;
+    this.canvas.width = 800; // TODO: config file to hold initial/magic values
     this.canvas.height = 600;
     this.ctx = this.canvas.getContext('2d');
     this.ctx.lineJoin = 'round';
@@ -22,12 +22,10 @@ class Canvas extends Component {
     this.props.websocket.emit('paint-entered-game', {
       lobbyId: this.props.lobby.lobbyId,
     });
-    console.log('websocket', this.props.websocket);
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.websocket && prevProps.websocket === null) {
-      window.console.log('update initialize PAINT');
       this.initializeWebsocketPaintListener();
     }
   }
@@ -140,7 +138,11 @@ class Canvas extends Component {
     return (
       <canvas
         ref={(ref) => (this.canvas = ref)}
-        style={{ background: 'white', boxShadow: ' 1px 1px 5px #9a9a9a' }}
+        style={{
+          background: 'white',
+          boxShadow: ' 1px 1px 5px #9a9a9a',
+          zIndex: 1,
+        }}
         onMouseDown={this.onMouseDown}
         onMouseLeave={this.endPaintEvent}
         onMouseUp={this.endPaintEvent}

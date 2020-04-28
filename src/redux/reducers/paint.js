@@ -10,6 +10,10 @@ const initialState = {
   subRoundStarted: false, // True once user has picked a word to draw, false once draw timer ends
   round: 1,
   isTimerRunning: false,
+  showScore: false,
+  score: [],
+  roundScore: [],
+  gameOver: false,
 };
 
 export const paintReducer = (state = initialState, action) => {
@@ -65,6 +69,14 @@ export const paintReducer = (state = initialState, action) => {
         isCurrentDrawer: false,
         drawingWord: '',
         guessingWord: '',
+      });
+    }
+    case PAINT_ACTIONS.SHOW_SCORE: {
+      return Object.assign({}, state, {
+        showScore: action.payload.show,
+        score: action.payload.score,
+        roundScore: action.payload.roundScore,
+        gameOver: action.payload.isGameOver,
       });
     }
     default: {
