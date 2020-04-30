@@ -137,7 +137,9 @@ class Canvas extends Component {
   render() {
     return (
       <canvas
-        ref={(ref) => (this.canvas = ref)}
+        ref={(ref) => {
+          this.canvas = ref === null ? this.canvas : ref;
+        }}
         style={{
           background: 'white',
           boxShadow: ' 1px 1px 5px #9a9a9a',

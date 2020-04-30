@@ -7,7 +7,6 @@ import './UserList.css';
 
 class UserList extends React.Component {
   render() {
-    console.log(this.props.paint.score);
     return (
       <div id="user-list-container">
         <SocketConnection lobby={true} />

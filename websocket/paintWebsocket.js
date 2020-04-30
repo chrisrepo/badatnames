@@ -226,7 +226,6 @@ module.exports = function (io, socket, lobbyList) {
         allEntered &&
         (!lobbyList[roomId].game || !lobbyList[roomId].game.hasBegun)
       ) {
-        console.log('paint all entered - START GAME');
         //start game logic
         startGame(io, socket, lobbyList[roomId], roomId);
       } else if (

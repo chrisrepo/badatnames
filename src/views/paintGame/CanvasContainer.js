@@ -80,7 +80,6 @@ class CanvasContainer extends Component {
       }
     );
     this.props.connection.websocket.on('paint-start-game', (data) => {
-      window.console.log('paint start game', data);
       this.props.setRound(data.round);
       this.props.setHostOptions({
         maxTime: data.maxTime,

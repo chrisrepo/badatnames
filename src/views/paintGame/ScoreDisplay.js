@@ -39,7 +39,6 @@ const orderScores = (scores) => {
     return b.score - a.score;
   });
 
-  console.log('score arr 1', scoreArr);
   return scoreArr;
 };
 
