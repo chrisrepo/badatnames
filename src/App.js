@@ -4,7 +4,6 @@ import React, { Component } from 'react';
 import { Route, Router } from 'react-router-dom';
 import history from './common/history';
 import io from 'socket.io-client';
-import { socketEndpoint } from './constants';
 import { connect } from 'react-redux';
 
 import './App.css';
@@ -27,7 +26,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    const ws = io();
+    const ws = io(); // No endpoint defaults to current machine (need this for deployed app to work)
     ws.on('connect', () => {
       this.onWebsocketConnect(ws);
     });

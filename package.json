@@ -27,6 +27,7 @@
     "uuid": "^7.0.2",
     "websocket": "^1.0.31"
   },
+  "proxy": "http://localhost:3001",
   "scripts": {
     "start": "node websocket",
     "build": "react-scripts build",

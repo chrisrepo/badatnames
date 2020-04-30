@@ -58,7 +58,7 @@ class Login extends React.Component {
   };
 
   handleLobbyIdChange = (event) => {
-    this.setState({ lobbyId: event.target.value });
+    this.setState({ lobbyId: event.target.value.toUpperCase() });
   };
 
   validInputs = () => {
@@ -124,7 +124,11 @@ class Login extends React.Component {
                   {selectedGame}-
                 </InputGroup.Text>
               </InputGroup.Prepend>
-              <Form.Control type="text" onChange={this.handleLobbyIdChange} />
+              <Form.Control
+                type="text"
+                value={this.state.lobbyId}
+                onChange={this.handleLobbyIdChange}
+              />
             </InputGroup>
           </Form.Group>
         </Col>
