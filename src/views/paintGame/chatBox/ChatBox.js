@@ -16,16 +16,8 @@ class ChatBox extends React.Component {
     chat: [], //Simple array that will hold chat message objects (to be cleared each subround)
   };
 
-  /** 
-   * 
-'emit-paint-guess-chat'  word, userId
-'emit-paint-guess-correct'  socketId
-'emit-paint-answer-chat' word, userId
-   */
-
   componentDidMount() {
     this.props.websocket.on('emit-paint-end-sub-round', (data) => {
-      // TODO: set answer word from data.word
       this.setState({ chat: [], guessedCorrect: false, guessText: '' });
       this.props.endCurrentSubRound();
       this.props.setRound(data.round);
@@ -67,7 +59,6 @@ class ChatBox extends React.Component {
     this.props.websocket.on('emit-paint-guess-correct', (data) => {
       const { socketId, userId } = data;
       if (socketId === this.props.websocket.id) {
-        // TODO: set that we got the answer right ? or do we even care since the server knows
         this.setState({ guessedCorrect: true });
       }
       // Post in chat with the user id
@@ -80,7 +71,7 @@ class ChatBox extends React.Component {
     });
 
     this.props.websocket.on('emit-paint-guess-close', (data) => {
-      const { socketId, userId } = data;
+      const { userId } = data;
       // Post in chat with the user id
       const chatObj = {
         type: 'close',

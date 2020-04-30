@@ -11,7 +11,7 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Login from './views/login/Login';
 import { v4 } from 'uuid';
-import { Paint } from './views/paintGame/Paint';
+import Paint from './views/paintGame/Paint';
 import { PongView } from './views/pongGame/PongView';
 import { setWebsocketConnection, setUser } from './redux/actions';
 import LobbyView from './views/pregameLobby/LobbyView';

@@ -1,6 +1,5 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Form from 'react-bootstrap/Form';
@@ -71,4 +70,4 @@ class PaintLobbyOptions extends React.Component {
 const mapStateToProps = (state) => ({
   connection: state.connection,
 });
-export default connect(mapStateToProps, {})(withRouter(PaintLobbyOptions));
+export default connect(mapStateToProps, {})(PaintLobbyOptions);

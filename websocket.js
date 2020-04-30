@@ -11,8 +11,7 @@ const utils = require('./websocket/utils');
 const datauri = new Datauri();
 const { JSDOM } = jsdom;
 */
-//Port from environment variable or default - 4001
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 
 //Setting up express and adding socketIo middleware
 const app = express();

@@ -27,6 +27,10 @@ class CanvasContainer extends Component {
   }
 
   componentDidMount() {
+    if (!this.props.lobby.lobbyId || this.props.lobby.lobbyId.length === 0) {
+      this.props.history.push('/');
+    }
+
     this.props.connection.websocket.emit('paint-entered-game', {
       lobbyId: this.props.lobby.lobbyId,
     });

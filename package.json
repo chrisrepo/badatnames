@@ -31,7 +31,7 @@
     "start": "node websocket",
     "build": "react-scripts build",
     "heroku-postbuild": "npm install && react-scripts build",
-    "run-client": "react-scripts start"
+    "client": "react-scripts start"
   },
   "eslintConfig": {
     "extends": "react-app"

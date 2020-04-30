@@ -1,17 +1,17 @@
 // Class name : routeName
 export const gamesMap = {
   Paint: '/paint',
-  Pong: '/pong',
-  Temp1: '/temp1',
-  Temp2: '/temp2',
-  Temp3: '/temp3',
-  Temp4: '/temp4',
+  //Pong: '/pong',
+  //Temp1: '/temp1',
+  //Temp2: '/temp2',
+  //Temp3: '/temp3',
+  //Temp4: '/temp4',
 };
 
 export const gamesDescription = {
   Paint: {
     name: 'Paint',
-    desc: 'Just a canvas for multiple people to paint in',
+    desc: 'Pictionary/Skribbl.io clone',
   },
   Pong: {
     name: 'Pong',

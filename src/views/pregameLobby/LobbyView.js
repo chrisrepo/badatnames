@@ -16,6 +16,9 @@ class LobbyView extends React.Component {
   };
 
   componentDidMount() {
+    if (!this.props.lobby.lobbyId || this.props.lobby.lobbyId.length === 0) {
+      this.props.history.push('/');
+    }
     this.props.connection.websocket.on('emit-start-game', () => {
       const route = gamesMap[this.props.gameSelector.selectedGame];
       this.props.history.push(route);

@@ -1,12 +1,13 @@
 import React, { Fragment } from 'react';
+import { withRouter } from 'react-router-dom';
 import UserList from './UserList';
 import CanvasContainer from './CanvasContainer';
 import DrawMenu from './bottomMenu/DrawMenu';
-import './Paint.css';
 import BackgroundImage from '../../common/BackgroundImage';
 import WordToGuess from './WordToGuess';
 import ChatBox from './chatBox/ChatBox';
-export class Paint extends React.Component {
+import './Paint.css';
+class Paint extends React.Component {
   render() {
     return (
       <Fragment>
@@ -14,7 +15,7 @@ export class Paint extends React.Component {
         <WordToGuess />
         <div className="main-paint">
           <UserList />
-          <CanvasContainer />
+          <CanvasContainer history={this.props.history} />
           <ChatBox />
         </div>
         <div className="lower-paint">
@@ -24,3 +25,5 @@ export class Paint extends React.Component {
     );
   }
 }
+
+export default withRouter(Paint);
