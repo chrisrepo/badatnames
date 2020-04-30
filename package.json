@@ -28,10 +28,10 @@
     "websocket": "^1.0.31"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "node websocket",
     "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "heroku-postbuild": "npm install && react-scripts build",
+    "run-client": "react-scripts start"
   },
   "eslintConfig": {
     "extends": "react-app"

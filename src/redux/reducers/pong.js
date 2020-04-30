@@ -16,7 +16,6 @@ export const pongReducer = (state = initialState, action) => {
       });
     }
     case PONG_ACTIONS.SET_SCORE: {
-      window.console.log('set score redux', action);
       return Object.assign({}, state, {
         score: action.payload,
       });

@@ -106,7 +106,7 @@ module.exports = {
     Object.keys(lobby.clientList).forEach((key) => {
       let gameScore = lobby.game.scores[key] || 0;
       let roundScore = lobby.game.roundScore[key] || 0;
-      lobby.game.scores[key] = gameScore + roundScore;
+      lobby.game.scores[key] = Math.ceil(gameScore + roundScore);
     });
   },
   createScoreObject(lobby) {
@@ -120,11 +120,11 @@ module.exports = {
     return output;
   },
   createEndGameScoreObject(lobby) {
-    const output = [];
+    const output = {};
     Object.keys(lobby.clientList).forEach((key) => {
       const user = lobby.clientList[key].username;
       const score = lobby.game.scores[key] || 0;
-      output.push({ user, score: Math.ceil(score) });
+      output[key] = { user, score: Math.ceil(score) };
     });
     //TODO: sort by most to least
     return output;

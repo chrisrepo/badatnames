@@ -16,13 +16,19 @@
   font-weight: bold;
   font-size: 2em;
 }
+
+.score-display-drawer {
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
 .sub-round-score {
-  margin-top: 0.75em;
+  margin-bottom: 0.75em;
   font-size: 1.2em;
 }
 
 .end-game-score {
-  margin-top: 0.75em;
+  margin-bottom: 0.75em;
   font-size: 1.2em;
 }
 

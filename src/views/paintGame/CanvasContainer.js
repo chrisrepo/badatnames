@@ -49,6 +49,7 @@ class CanvasContainer extends Component {
         score: data.score,
         roundScore: data.roundScore,
         isGameOver: false,
+        nextDrawer: data.currentDrawer,
       });
     });
     this.props.connection.websocket.on('paint-pre-guess', (data) => {
@@ -105,6 +106,10 @@ class CanvasContainer extends Component {
     const scoreToShow = this.props.paint.gameOver
       ? this.props.paint.score
       : this.props.paint.roundScore;
+    const drawerClient = this.props.lobby.clientList[
+      this.props.paint.nextDrawer
+    ];
+    const nextDrawer = drawerClient ? drawerClient.username : '';
     return (
       <Fragment>
         <PreGuessModal
@@ -119,6 +124,7 @@ class CanvasContainer extends Component {
             scores={scoreToShow}
             show={this.props.paint.showScore}
             isEndGame={this.props.paint.gameOver}
+            nextDrawer={nextDrawer}
           />
           <Canvas isCurrentDrawer={this.props.paint.isCurrentDrawer} />
         </div>

@@ -2,27 +2,31 @@ const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 const path = require('path');
-const jsdom = require('jsdom');
-const Datauri = require('datauri');
+//const jsdom = require('jsdom');
+//const Datauri = require('datauri');
 
 const utils = require('./websocket/utils');
 
-// Headless server vars
+/* Headless server vars
 const datauri = new Datauri();
 const { JSDOM } = jsdom;
-
+*/
 //Port from environment variable or default - 4001
-const port = process.env.PORT || 4001;
+const port = process.env.PORT || 3000;
 
 //Setting up express and adding socketIo middleware
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
-// Server vars
+app.use(express.static(path.join(__dirname, 'build')));
+app.get('/*', (req, res) => {
+  res.sendFile(__dirname + '/build/index.html');
+});
+
+// Websocket vars
 var clientList = [];
 var lobbyList = {};
-
 //Setting up a socket with the namespace "connection" for new sockets
 io.on('connection', (socket) => {
   console.log('main websocket user connected', socket.id);
@@ -76,6 +80,7 @@ io.on('connection', (socket) => {
   require('./websocket/lobbyWebsocket.js')(io, socket, lobbyList, clientList);
   require('./websocket/paintWebsocket.js')(io, socket, lobbyList);
 });
+/*
 function setupAuthoritativePhaser() {
   JSDOM.fromFile(path.join(__dirname, 'gameServers/pongServer/index.html'), {
     runScripts: 'dangerously', // To run the scripts in the html file
@@ -100,6 +105,6 @@ function setupAuthoritativePhaser() {
     .catch((error) => {
       console.log(error.message);
     });
-}
+}*/
 //setupAuthoritativePhaser(); Dont do pong stuff rn
 server.listen(port, () => console.log(`Listening on port ${port}`));

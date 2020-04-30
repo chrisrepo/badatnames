@@ -5,6 +5,7 @@ const initialState = {
   selectedHexColor: '#000000',
   brushSize: 5,
   isCurrentDrawer: false,
+  nextDrawer: undefined,
   drawingWord: '',
   guessingWord: '',
   subRoundStarted: false, // True once user has picked a word to draw, false once draw timer ends
@@ -79,6 +80,7 @@ export const paintReducer = (state = initialState, action) => {
         score: action.payload.score,
         roundScore: action.payload.roundScore,
         gameOver: action.payload.isGameOver,
+        nextDrawer: action.payload.nextDrawer,
       });
     }
     case PAINT_ACTIONS.SET_HOST_OPTIONS: {

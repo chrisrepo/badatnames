@@ -69,13 +69,20 @@ export const setTimer = (toggle) => ({
   payload: toggle,
 });
 
-export const showScore = ({ show, score, roundScore, isGameOver }) => ({
+export const showScore = ({
+  show,
+  score,
+  roundScore,
+  isGameOver,
+  nextDrawer,
+}) => ({
   type: PAINT_ACTIONS.SHOW_SCORE,
   payload: {
     show,
     score,
     roundScore,
     isGameOver,
+    nextDrawer,
   },
 });
 

@@ -103,13 +103,13 @@ function endSubRound(io, lobby, roomId) {
   updateScores(lobby);
   // get next word & drawer
   const nextDrawer = getNextDrawer(lobby, lobby.game.currentDrawer);
-  const gameScore = createEndGameScoreObject(lobby);
   const roundScore = createScoreObject(lobby);
+  const totalScore = createEndGameScoreObject(lobby);
   // clear canvas
   io.in(roomId).emit('emit-clear-canvas');
   if (nextDrawer === undefined) {
     io.in(roomId).emit('emit-paint-end-game', {
-      score: gameScore,
+      score: totalScore,
       roundScore: roundScore,
     });
   } else {
@@ -119,7 +119,7 @@ function endSubRound(io, lobby, roomId) {
       word: lobby.game.currentWord,
       currentDrawer: lobby.game.currentDrawer,
       round: lobby.game.round,
-      score: gameScore,
+      score: totalScore,
       roundScore: roundScore,
     });
     // Wipe out some round specific variables

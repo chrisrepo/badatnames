@@ -55,7 +55,6 @@ class GameSelector extends React.Component {
   render() {
     const activeIndex = this.getActiveIndex();
     const selectedGame = gamesDescription[this.props.gameSelector.selectedGame];
-    window.console.log('selected game', selectedGame, activeIndex);
     return (
       <Carousel
         activeIndex={this.state.index}
