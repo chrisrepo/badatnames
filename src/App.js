@@ -3,7 +3,7 @@
 import React, { Component } from 'react';
 import { Route, Router } from 'react-router-dom';
 import history from './common/history';
-import socketIOClient from 'socket.io-client';
+import io from 'socket.io-client';
 import { socketEndpoint } from './constants';
 import { connect } from 'react-redux';
 
@@ -27,7 +27,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    const ws = socketIOClient(socketEndpoint);
+    const ws = io();
     ws.on('connect', () => {
       this.onWebsocketConnect(ws);
     });
